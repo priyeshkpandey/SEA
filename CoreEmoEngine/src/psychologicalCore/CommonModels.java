@@ -7,7 +7,7 @@ package psychologicalCore;
 
 */public class CommonModels {
 	
-	public int getNoOfInvokedEmos()
+	public int getNoOfInvokedEmos(Integer currIter)
 	{
 		System.out.println("Returning from CommonModels");
 		return 2;

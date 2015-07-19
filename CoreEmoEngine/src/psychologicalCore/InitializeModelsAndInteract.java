@@ -504,7 +504,7 @@ public class InitializeModelsAndInteract {
 							
 							if(influenceIntensity > 0)
 							{
-								// TODO: Updates for influence
+								
 								
 								String modelKey =   interactKey.split(",")[3]+","
 												  + interactKey.split(",")[4]+","
