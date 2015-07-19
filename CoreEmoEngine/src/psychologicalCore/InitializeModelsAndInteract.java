@@ -340,9 +340,7 @@ public class InitializeModelsAndInteract {
 			// TODO: Various types of source connectors e.g. excel, word, .csv, Access and other Databases
 		}
 		
-		if(isInteraction.equalsIgnoreCase("0")){
-			
-		}
+		
 
 		if (returnType.equalsIgnoreCase("INT")) {
 			updQuery.append((Integer) varValue);
