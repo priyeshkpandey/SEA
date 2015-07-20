@@ -20,7 +20,8 @@ public class GetModels extends BaseController {
 	public @ResponseBody List<ResourceModel> getModels(
 			@RequestParam(value = "userId") String userId,
 			@RequestParam(value = "simId") Long simId) {
-		initConfig();
+		if(loadConfig())
+		{	
 
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
 				config.getProperty("spring_xml"));
@@ -32,6 +33,8 @@ public class GetModels extends BaseController {
 		context.close();
 		
 		return response;
+		}
+		return null;
 	}
 
 }

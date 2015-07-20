@@ -21,7 +21,8 @@ public class GetObservedEmos extends BaseController {
 			@RequestParam(value = "userId") String userId,
 			@RequestParam(value = "simId") Long simId) {
 
-		initConfig();
+		if(loadConfig())
+		{
 
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
 				config.getProperty("spring_xml"));
@@ -34,6 +35,9 @@ public class GetObservedEmos extends BaseController {
 		context.close();
 
 		return response;
+		}
+		System.out.println("Config not loaded.");
+		return null;
 
 	}
 }

@@ -18,7 +18,8 @@ public class CreateModelsController extends BaseController {
 	@RequestMapping(method = RequestMethod.POST)
 	public void createModels(@RequestBody List<ResourceModel> modelList)
 	{
-		initConfig();
+		if(loadConfig())
+		{
 
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
 				config.getProperty("spring_xml"));
@@ -31,6 +32,7 @@ public class CreateModelsController extends BaseController {
 		}
 		
 		context.close();
+		}
 	}
 
 }

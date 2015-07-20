@@ -1,5 +1,8 @@
 package emoCoreServices;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -13,16 +16,35 @@ public class BaseController {
 	
 	static Logger LOGGER = LoggerFactory.getLogger(BaseController.class);
 	
-	public void initConfig()
-	{
-		if(PropertiesUtil.loadConfig())
-		{
-			config = PropertiesUtil.CONFIG;
+	static {
+		System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
+	}
+	
+	
+	
+	public boolean loadConfig() {
+		try {
+
+			String fileSeparator = System.getProperty("file.separator");
+			FileInputStream propFileStream = new FileInputStream(new File(
+					"resources" + fileSeparator
+							+ "psychologicalContext.properties"));
+			config = new Properties();
+			config.load(propFileStream);
+		} catch (IOException ioe) {
+			LOGGER.error("IO Exception occurred while reading psychologicalContext.properties: "
+					+ ioe.getStackTrace());
+			ioe.printStackTrace();
+			return false;
+		} catch (Exception e) {
+			LOGGER.error("Exception occurred while reading psychologicalContext.properties: "
+					+ e.getStackTrace());
+			e.printStackTrace();
+			return false;
 		}
-		else
-		{
-			LOGGER.error("Config file not loaded.");
-		}
+
+		return true;
+
 	}
 
 }

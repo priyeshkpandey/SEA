@@ -20,7 +20,8 @@ public class GetSimulations extends BaseController {
 	public @ResponseBody List<Simulation> getSimulations(
 			@RequestParam(value = "userId") String userId) {
 		
-		initConfig();
+		if(loadConfig())
+		{	
 
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
 				config.getProperty("spring_xml"));
@@ -31,6 +32,9 @@ public class GetSimulations extends BaseController {
 		context.close();
 		
 		return response;
+		}
+		
+		return null;
 
 	}
 

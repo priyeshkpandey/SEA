@@ -16,7 +16,8 @@ public class CreateSimulationController extends BaseController {
 	@RequestMapping(method = RequestMethod.POST)
 	public void createSimulation(@RequestBody Simulation sim) {
 		
-		initConfig();
+		if(loadConfig())
+		{	
 
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
 				config.getProperty("spring_xml"));
@@ -26,6 +27,7 @@ public class CreateSimulationController extends BaseController {
 		simDAO.saveSimulation(sim);
 		
 		context.close();
+		}
 	}
 
 }
