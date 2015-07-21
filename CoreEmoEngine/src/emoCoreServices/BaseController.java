@@ -11,28 +11,25 @@ import org.slf4j.LoggerFactory;
 import emoUtils.PropertiesUtil;
 
 public class BaseController {
-	
+
 	public Properties config;
-	
+
 	static Logger LOGGER = LoggerFactory.getLogger(BaseController.class);
-	
+
 	static {
 		System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
 	}
-	
-	
-	
+
 	public boolean loadConfig() {
 		try {
 
 			String fileSeparator = System.getProperty("file.separator");
-			FileInputStream propFileStream = new FileInputStream(new File(
-					"resources" + fileSeparator
-							+ "psychologicalContext.properties"));
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+			ClassLoader classLoader = Thread.currentThread()
+					.getContextClassLoader();
 			config = new Properties();
-			config.load(classLoader.getResourceAsStream("resources" + fileSeparator
-					+ "psychologicalContext.properties"));
+			System.out.println(classLoader);
+			config.load(classLoader.getResourceAsStream("resources"
+					+ fileSeparator + "psychologicalContext.properties"));
 		} catch (IOException ioe) {
 			LOGGER.error("IO Exception occurred while reading psychologicalContext.properties: "
 					+ ioe.getStackTrace());

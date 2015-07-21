@@ -12,4 +12,15 @@
         http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
  <context:component-scan base-package="emoCoreServices" />
  <mvc:annotation-driven />
+ 
+ <bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"></bean>
+<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="messageConverters">
+          <list>
+            <ref bean="jsonConverter"/>
+          </list>
+    </property>
+</bean>
+ 
+ 
   </beans>

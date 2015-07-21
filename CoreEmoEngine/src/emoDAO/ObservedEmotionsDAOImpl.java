@@ -24,8 +24,8 @@ public class ObservedEmotionsDAOImpl implements ObservedEmotionsDAO {
 			Long simId) {
 		Session session = this.sessionFactory.openSession();
 		Criteria cr = session.createCriteria(ObservedEmotions.class);
-		cr.add(Restrictions.eq("user_id", userId));
-		cr.add(Restrictions.eq("simulation_id", simId));
+		cr.add(Restrictions.eq("userId", userId));
+		cr.add(Restrictions.eq("simId", simId));
 		List<ObservedEmotions> obsEmosList = cr.list();
 		
 		return obsEmosList;

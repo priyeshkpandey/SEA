@@ -34,8 +34,8 @@ public class ResourceModelDAOImpl implements ResourceModelDAO {
 	public List<ResourceModel> getModelsBySimUserId(String userId, Long simId) {
 		Session session = this.sessionFactory.openSession();
 		Criteria cr = session.createCriteria(ResourceModel.class);
-		cr.add(Restrictions.eq("user_id", userId));
-		cr.add(Restrictions.eq("simulation_id", simId));
+		cr.add(Restrictions.eq("userId", userId));
+		cr.add(Restrictions.eq("simId", simId));
 		List<ResourceModel> modelsList = cr.list();
 		
 		return modelsList;

@@ -33,7 +33,7 @@ public class SimulationDAOImpl implements SimulationDAO {
 	public List<Simulation> getSimulationsByUser(String userId) {
 		Session session = this.sessionFactory.openSession();
 		Criteria cr = session.createCriteria(Simulation.class);
-		cr.add(Restrictions.eq("user_id", userId));
+		cr.add(Restrictions.eq("userId", userId));
 		List<Simulation> simList = cr.list();
 		
 		return simList;

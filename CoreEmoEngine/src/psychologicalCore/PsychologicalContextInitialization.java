@@ -54,11 +54,12 @@ static Logger LOGGER = LoggerFactory.getLogger(PsychologicalContextInitializatio
 		try {
 
 			String fileSeparator = System.getProperty("file.separator");
-			FileInputStream propFileStream = new FileInputStream(new File(
-					"resources" + fileSeparator
-							+ "psychologicalContext.properties"));
+			ClassLoader classLoader = Thread.currentThread()
+					.getContextClassLoader();
 			config = new Properties();
-			config.load(propFileStream);
+			System.out.println(classLoader);
+			config.load(classLoader.getResourceAsStream("resources"
+					+ fileSeparator + "psychologicalContext.properties"));
 		} catch (IOException ioe) {
 			LOGGER.error("IO Exception occurred while reading psychologicalContext.properties: "
 					+ ioe.getStackTrace());

@@ -1,29 +1,39 @@
 package emoCoreServiceObjects;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 
+@SuppressWarnings("serial")
 @Entity
 @Table(name="observed_emotions")
-public class ObservedEmotions {
+public class ObservedEmotions implements Serializable{
 	
+	@Id
 	@Column(name="iteration_no")
 	Long iterNo;
 	
+	@Id
 	@Column(name="agent_id")
 	Long agentId;
 	
+	@Id
 	@Column(name="target_event")
 	Long targetEvent;
 	
+	@Id
 	@Column(name="target_neighbour")
 	Long targetNeighbour;
 	
+	@Id
 	@Column(name="target_object")
 	Long targetObj;
 	
+	@Id
 	@Column(name="emotion")
 	String emotion;
 	
@@ -33,9 +43,11 @@ public class ObservedEmotions {
 	@Column(name="emotion_intensity")
 	Double emoIntensity;
 	
+	@Id
 	@Column(name="user_id")
 	String userId;
 	
+	@Id
 	@Column(name="simulation_id")
 	Long simId;
 

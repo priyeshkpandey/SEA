@@ -1,22 +1,30 @@
 package emoCoreServiceObjects;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
+@SuppressWarnings("serial")
 @Entity
 @Table(name="model_resources")
-public class ResourceModel {
+public class ResourceModel implements Serializable{
 	
+	@Id
 	@Column(name="simulation_id")
 	Long simId;
 	
+	@Id
 	@Column(name="agent_id")
 	Long agentId;
 	
+	@Id
 	@Column(name="user_id")
 	String userId;
 	
+	@Id
 	@Column(name="variable_to_model")
 	String varToModel;
 	
