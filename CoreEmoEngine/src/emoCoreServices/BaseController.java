@@ -29,8 +29,10 @@ public class BaseController {
 			FileInputStream propFileStream = new FileInputStream(new File(
 					"resources" + fileSeparator
 							+ "psychologicalContext.properties"));
+			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 			config = new Properties();
-			config.load(propFileStream);
+			config.load(classLoader.getResourceAsStream("resources" + fileSeparator
+					+ "psychologicalContext.properties"));
 		} catch (IOException ioe) {
 			LOGGER.error("IO Exception occurred while reading psychologicalContext.properties: "
 					+ ioe.getStackTrace());
