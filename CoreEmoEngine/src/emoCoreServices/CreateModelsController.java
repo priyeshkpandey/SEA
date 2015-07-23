@@ -2,6 +2,7 @@ package emoCoreServices;
 
 import java.util.List;
 
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +22,7 @@ public class CreateModelsController extends BaseController {
 		if(loadConfig())
 		{
 
-		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
+			AbstractApplicationContext context = new ClassPathXmlApplicationContext(
 				config.getProperty("spring_xml"));
 		
 		ResourceModelDAO modelDAO = context.getBean(ResourceModelDAO.class);

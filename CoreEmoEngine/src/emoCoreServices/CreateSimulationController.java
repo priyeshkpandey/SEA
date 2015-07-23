@@ -1,5 +1,6 @@
 package emoCoreServices;
 
+import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,7 @@ public class CreateSimulationController extends BaseController {
 		if(loadConfig())
 		{	
 
-		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
+			AbstractApplicationContext context = new ClassPathXmlApplicationContext(
 				config.getProperty("spring_xml"));
 		
 		SimulationDAO simDAO = context.getBean(SimulationDAO.class);

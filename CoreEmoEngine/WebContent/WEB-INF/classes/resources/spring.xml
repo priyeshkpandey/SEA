@@ -25,15 +25,24 @@
                 <value>emoCoreServiceObjects.ResourceModel</value>
                 <value>emoCoreServiceObjects.ObservedEmotions</value>
             </list>
-        </property>
+        </property>      
+        
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
                 <prop key="hibernate.current_session_context_class">thread</prop>
                 <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.query.factory_class">org.hibernate.hql.internal.classic.ClassicQueryTranslatorFactory</prop>
             </props>
         </property>
+        
     </bean>
+    
+    <bean id="transactionManager"
+class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+<property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+</bean>
+
  
      
     <bean id="simulationDAO" class="emoDAO.SimulationDAOImpl">

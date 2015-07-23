@@ -33,6 +33,20 @@
         </configuration>
         
       </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      
     </plugins>
   </build>
   
@@ -113,7 +127,7 @@
         <dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>5.0.0.CR1</version>
+			<version>4.3.10.Final</version>
 		</dependency>
 
 
@@ -121,7 +135,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>5.0.0.CR1</version>
+            <version>4.3.10.Final</version>
         </dependency>
 
         <!-- database connection pooling -->
