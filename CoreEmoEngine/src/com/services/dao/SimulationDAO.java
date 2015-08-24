@@ -1,8 +1,8 @@
-package emoDAO;
+package com.services.dao;
 
 import java.util.List;
 
-import emoCoreServiceObjects.Simulation;
+import com.services.entities.Simulation;
 
 public interface SimulationDAO {
 	

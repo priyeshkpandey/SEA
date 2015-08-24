@@ -1,8 +1,8 @@
-package emoDAO;
+package com.services.dao;
 
 import java.util.List;
 
-import emoCoreServiceObjects.ObservedEmotions;
+import com.services.entities.ObservedEmotions;
 
 public interface ObservedEmotionsDAO {
 	

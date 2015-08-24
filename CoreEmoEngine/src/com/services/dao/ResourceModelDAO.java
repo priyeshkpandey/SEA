@@ -1,8 +1,8 @@
-package emoDAO;
+package com.services.dao;
 
 import java.util.List;
 
-import emoCoreServiceObjects.ResourceModel;
+import com.services.entities.ResourceModel;
 
 public interface ResourceModelDAO {
 	

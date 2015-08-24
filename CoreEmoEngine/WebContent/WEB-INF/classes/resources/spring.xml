@@ -21,9 +21,9 @@
         <property name="dataSource" ref="dataSource" />
         <property name="annotatedClasses">
             <list>
-                <value>emoCoreServiceObjects.Simulation</value>
-                <value>emoCoreServiceObjects.ResourceModel</value>
-                <value>emoCoreServiceObjects.ObservedEmotions</value>
+                <value>com.services.entities.Simulation</value>
+                <value>com.services.entities.ResourceModel</value>
+                <value>com.services.entities.ObservedEmotions</value>
             </list>
         </property>      
         
@@ -45,13 +45,13 @@ class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 
  
      
-    <bean id="simulationDAO" class="emoDAO.SimulationDAOImpl">
+    <bean id="simulationDAO" class="com.services.dao.SimulationDAOImpl">
         <property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
     </bean>
-    <bean id="resourceModelDAO" class="emoDAO.ResourceModelDAOImpl">
+    <bean id="resourceModelDAO" class="com.services.dao.ResourceModelDAOImpl">
         <property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
     </bean>
-    <bean id="ObservedEmotionsDAO" class="emoDAO.ObservedEmotionsDAOImpl">
+    <bean id="ObservedEmotionsDAO" class="com.services.dao.ObservedEmotionsDAOImpl">
         <property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
     </bean>
     

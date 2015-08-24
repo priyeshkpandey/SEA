@@ -1,4 +1,4 @@
-package emoDAO;
+package com.services.dao;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 
-import emoCoreServiceObjects.ObservedEmotions;
-import emoCoreServiceObjects.ResourceModel;
+import com.services.entities.ObservedEmotions;
+import com.services.entities.ResourceModel;
 
 public class ObservedEmotionsDAOImpl implements ObservedEmotionsDAO {
 

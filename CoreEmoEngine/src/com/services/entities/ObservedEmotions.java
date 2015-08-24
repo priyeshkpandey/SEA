@@ -1,4 +1,4 @@
-package emoCoreServiceObjects;
+package com.services.entities;
 
 import java.io.Serializable;
 
@@ -12,6 +12,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name="observed_emotions")
 public class ObservedEmotions implements Serializable{
+	
 	
 	@Id
 	@Column(name="iteration_no")

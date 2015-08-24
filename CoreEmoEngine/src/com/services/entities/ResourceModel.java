@@ -1,4 +1,4 @@
-package emoCoreServiceObjects;
+package com.services.entities;
 
 import java.io.Serializable;
 

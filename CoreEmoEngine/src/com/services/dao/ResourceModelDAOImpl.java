@@ -1,4 +1,4 @@
-package emoDAO;
+package com.services.dao;
 
 import java.util.List;
 
@@ -8,21 +8,22 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
-import emoCoreServiceObjects.Simulation;
+import com.services.entities.ResourceModel;
+import com.services.entities.Simulation;
 
-public class SimulationDAOImpl implements SimulationDAO {
-	
+public class ResourceModelDAOImpl implements ResourceModelDAO {
+
 	private SessionFactory sessionFactory;
 	 
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
-
+	
 	@Override
-	public void saveSimulation(Simulation sim) {
+	public void saveModel(ResourceModel resModel) {
 		Session session = this.sessionFactory.openSession();
         Transaction tx = session.beginTransaction();
-        session.persist(sim);
+        session.persist(resModel);
         tx.commit();
         session.close();
 
@@ -30,13 +31,14 @@ public class SimulationDAOImpl implements SimulationDAO {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Simulation> getSimulationsByUser(String userId) {
+	public List<ResourceModel> getModelsBySimUserId(String userId, Long simId) {
 		Session session = this.sessionFactory.openSession();
-		Criteria cr = session.createCriteria(Simulation.class);
+		Criteria cr = session.createCriteria(ResourceModel.class);
 		cr.add(Restrictions.eq("userId", userId));
-		List<Simulation> simList = cr.list();
+		cr.add(Restrictions.eq("simId", simId));
+		List<ResourceModel> modelsList = cr.list();
 		
-		return simList;
+		return modelsList;
 	}
 
 }
