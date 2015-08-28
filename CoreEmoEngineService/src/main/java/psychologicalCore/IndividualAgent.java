@@ -43,7 +43,7 @@ public class IndividualAgent {
 	private double familiarity;
 	private HashMap<Integer, HashMap<String, Object>> neighbours 
 	             = new HashMap<Integer, HashMap<String, Object>>();  
-	private int simulation_id;
+	private Long simulation_id;
 	private int proposedIter;
 	private int workingIter;
 	private int maxIter;
@@ -57,13 +57,13 @@ public class IndividualAgent {
 		agentID = 0;
 		eventID = 0;
 		objectID = 0;
-		simulation_id = 0;
+		simulation_id = 0l;
 		isAgent = false;
 		isEvent = false;
 		isObject = false;
 	}
 	
-	IndividualAgent(int simId, int agentId, int eventId, int objId)
+	IndividualAgent(Long simId, int agentId, int eventId, int objId)
 	{
 		agentID = agentId;
 		eventID = eventId;
@@ -91,7 +91,7 @@ public class IndividualAgent {
 			// *** Simulation Data table query execution ***
 			String simulationQuery = ConstantVariables.querySimDataBySimID;
 			PreparedStatement psSimDataQuery = conn.prepareStatement(simulationQuery);
-			psSimDataQuery.setInt(1, simulation_id);
+			psSimDataQuery.setLong(1, simulation_id);
 			
 			ResultSet rsSimData = psSimDataQuery.executeQuery();
 			boolean isSimExists = rsSimData.first();
@@ -383,7 +383,7 @@ public class IndividualAgent {
 			   String updSimDataTabWrkItr = ConstantVariables.updSimDataWrkItrBySimID;
 			   PreparedStatement psUpdWrkItr = conn.prepareStatement(updSimDataTabWrkItr);
 			   psUpdWrkItr.setInt(1, workingIter);
-			   psUpdWrkItr.setInt(2, simulation_id);
+			   psUpdWrkItr.setLong(2, simulation_id);
 			   int rowsAffected = psUpdWrkItr.executeUpdate();
 			   
 			   if(rowsAffected > 0)

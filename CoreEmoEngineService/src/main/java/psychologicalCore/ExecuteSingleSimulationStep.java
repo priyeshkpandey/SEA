@@ -18,9 +18,9 @@ public class ExecuteSingleSimulationStep {
 
 	HashMap<String, HashMap<String, Object>> models = new HashMap<String, HashMap<String, Object>>();
 
-	private Integer simulationId;
+	private Long simulationId;
 	private Integer agentId;
-	private Integer currIter;
+	private Long currIter;
 	private Integer sourceAgent;
 	private Integer thirdPerson;
 	private Integer targetAgent;
@@ -36,15 +36,15 @@ public class ExecuteSingleSimulationStep {
 	private int lastIndex;
 	Connection conn;
 
-	ExecuteSingleSimulationStep() {
-		simulationId = 0;
+	public ExecuteSingleSimulationStep() {
+		simulationId = 0l;
 		agentId = 0;
-		currIter = 0;
+		currIter = 0l;
 		thirdPerson = 0;
 
 	}
 
-	ExecuteSingleSimulationStep(int simId, int iter, int agent, int thrdPerson) {
+	public ExecuteSingleSimulationStep(Long simId, Long iter, int agent, Integer thrdPerson) {
 		simulationId = simId;
 		agentId = agent;
 		currIter = iter;
@@ -61,7 +61,7 @@ public class ExecuteSingleSimulationStep {
 
 			PreparedStatement psModels = conn
 					.prepareStatement(ConstantVariables.queryModelResources);
-			psModels.setInt(1, simulationId);
+			psModels.setLong(1, simulationId);
 			psModels.setInt(2, agentId);
 			ResultSet rsModels = psModels.executeQuery();
 
@@ -419,7 +419,7 @@ public class ExecuteSingleSimulationStep {
 
 			PreparedStatement psQueryInteract = conn
 					.prepareStatement(ConstantVariables.queryInteractModels);
-			psQueryInteract.setInt(1, currIter);
+			psQueryInteract.setLong(1, currIter);
 			psQueryInteract.setInt(2, agentId);
 
 			ResultSet rsQueryInteract = psQueryInteract.executeQuery();
