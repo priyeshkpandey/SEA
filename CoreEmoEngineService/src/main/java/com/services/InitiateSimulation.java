@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import psychologicalCore.ConstantVariables;
@@ -58,10 +59,22 @@ public class InitiateSimulation extends BaseController {
 
 			
 		}
+		
+		simToRun.setIsDone(true);
+		simDAO.save(simToRun);
 
 	}
 	
-	
+	@RequestMapping(value = "/sim/status", method = RequestMethod.GET)
+	public Boolean getSimStatus(@RequestParam(value = "userId") String userId,
+			@RequestParam(value = "simId") Long simId)
+	{
+		SimulationDAO simDAO = context.getBean(SimulationDAO.class);
+		Simulation sim = simDAO.getSimulationByUserAndSimId(userId, simId);
+		
+		return sim.getIsDone();
+		
+	}
 	
 
 }

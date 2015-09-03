@@ -43,7 +43,16 @@ public class Simulation implements Serializable{
 	@Column(name="no_of_agents")
 	Long noOfAgents;
 	
+	@Column(name="is_done")
+	Boolean isDone;
 	
+	
+	public Boolean getIsDone() {
+		return isDone;
+	}
+	public void setIsDone(Boolean isDone) {
+		this.isDone = isDone;
+	}
 	public Long getNoOfAgents() {
 		return noOfAgents;
 	}
