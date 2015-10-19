@@ -2,6 +2,7 @@ package psychologicalCore;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,8 +12,12 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
 
 public class ExecuteSingleSimulationStep {
 
@@ -44,7 +49,8 @@ public class ExecuteSingleSimulationStep {
 
 	}
 
-	public ExecuteSingleSimulationStep(Long simId, Long iter, int agent, Integer thrdPerson) {
+	public ExecuteSingleSimulationStep(Long simId, Long iter, int agent,
+			Integer thrdPerson) {
 		simulationId = simId;
 		agentId = agent;
 		currIter = iter;
@@ -149,8 +155,6 @@ public class ExecuteSingleSimulationStep {
 				if (isInteraction.equalsIgnoreCase("0")) {
 					setTableValues(keyVal);
 				}
-				
-				
 
 			}
 
@@ -331,8 +335,22 @@ public class ExecuteSingleSimulationStep {
 			varValue = mthd.invoke(classObject, currIter);
 
 		} else {
-			// TODO: Various types of source connectors e.g. excel, word, .csv,
-			// Access and other Databases
+			RestTemplate restTemplate = new RestTemplate();
+
+			String apiPath = (String) models.get(modelKey).get("method_name");
+			ModelResponseExtractor modelExtractor = new ModelResponseExtractor();
+
+			Map<String, Object> urlParams = new HashMap<String, Object>();
+			urlParams.put("simId", ConstantVariables.userID);
+			urlParams.put("userId", ConstantVariables.simulationId);
+			urlParams.put("iter", currIter);
+
+			ModelValue modValResponse = restTemplate.execute(apiPath,
+					HttpMethod.GET, null, modelExtractor, urlParams);
+			
+			returnType = modValResponse.getType();
+			varValue = modValResponse.getValue();
+
 		}
 
 		if (returnType.equalsIgnoreCase("INT")) {
