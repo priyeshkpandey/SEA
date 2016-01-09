@@ -1,4 +1,4 @@
-package psychologicalCore;
+package com.services.psychological.core;
 
 public class ModelValue {
 

@@ -1,4 +1,4 @@
-package modelSourceConnectors;
+package com.services.model.connectors;
 
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;

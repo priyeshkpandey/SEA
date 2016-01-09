@@ -1,4 +1,4 @@
-package emoUtils;
+package com.services.emo.utils;
 
 import java.io.File;
 import java.io.FileInputStream;

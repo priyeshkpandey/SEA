@@ -1,4 +1,4 @@
-package psychologicalCore;
+package com.services.psychological.core;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,12 +8,16 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeMap;
 import java.lang.reflect.Method;
 import java.sql.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class IndividualAgent {
 	private int agentID;         // used but not assigned a value
@@ -52,18 +56,13 @@ public class IndividualAgent {
 	private HashMap<String, Integer> triggeredEmosPrecedence = new HashMap<String, Integer>();
 	private HashMap<String, HashMap<String, Object>> emoAttitudes = new HashMap<String, HashMap<String, Object>>();
 	
-	IndividualAgent()
-	{
-		agentID = 0;
-		eventID = 0;
-		objectID = 0;
-		simulation_id = 0l;
-		isAgent = false;
-		isEvent = false;
-		isObject = false;
-	}
+	private ConstantVariables constVars;
 	
-	IndividualAgent(Long simId, int agentId, int eventId, int objId)
+	@Autowired
+	@Qualifier("psycheConfig")
+	private Properties psycheConfig;
+	
+	IndividualAgent(Long simId, int agentId, int eventId, int objId, ConstantVariables constVars)
 	{
 		agentID = agentId;
 		eventID = eventId;
@@ -72,6 +71,7 @@ public class IndividualAgent {
 		isAgent = false;
 		isEvent = false;
 		isObject = false;
+		this.constVars = constVars;
 	}
 	
 	public void agentPerception()
@@ -81,15 +81,15 @@ public class IndividualAgent {
 		//System.out.println("Inside agentPerception!");
 		try
 		{
-			Class.forName(ConstantVariables.dbDriver).newInstance();
-			conn = DriverManager.getConnection(ConstantVariables.dbConnectString,
-					ConstantVariables.dbUserName, ConstantVariables.dbPassword);
+			Class.forName(constVars.getDBDriver()).newInstance();
+			conn = DriverManager.getConnection(constVars.getDBConnection(),
+					constVars.getDBUserName(), constVars.getDBPassword());
 			
 			// [1] Logic between this starting and ending comments
 			
 			
 			// *** Simulation Data table query execution ***
-			String simulationQuery = ConstantVariables.querySimDataBySimID;
+			String simulationQuery = constVars.querySimDataBySimID();
 			PreparedStatement psSimDataQuery = conn.prepareStatement(simulationQuery);
 			psSimDataQuery.setLong(1, simulation_id);
 			
@@ -121,7 +121,7 @@ public class IndividualAgent {
 			 if(currIter<=workingIter)
 			 {
 			   // *** Emotional Attitudes table query execution ***
-			   String emoAttQuery =  ConstantVariables.queryEmoAttByAgIDIter;
+			   String emoAttQuery =  constVars.queryEmoAttByAgIDIter();
 			   PreparedStatement psEmoAttQuery = conn.prepareStatement(emoAttQuery);
 			   psEmoAttQuery.setInt(1, currIter);
 			   psEmoAttQuery.setInt(2, agentID);
@@ -161,7 +161,7 @@ public class IndividualAgent {
 			   // *** Check if a model exists for No of Emotions to Invoke ***
 			   
 			  
-			   PreparedStatement psAgentTable = conn.prepareStatement(ConstantVariables.queryAgentTable);
+			   PreparedStatement psAgentTable = conn.prepareStatement(constVars.queryAgentTable());
 			   psAgentTable.setInt(1, currIter);
 			   psAgentTable.setInt(2, agentID);
 			  
@@ -198,22 +198,22 @@ public class IndividualAgent {
 			   while(emoIter.hasNext())
 			   {
 				   String emotion = emoIter.next();
-				   if(ConstantVariables.EVENT_EMOTIONS.contains(emotion.trim().toLowerCase()))
+				   if(psycheConfig.getProperty("EVENT_EMOTIONS").contains(emotion.trim().toLowerCase()))
 				   {
 					 isEvent = true;   
 				   }
 				   
-				   if(ConstantVariables.AGENT_EMOTIONS.contains(emotion.trim().toLowerCase()))
+				   if(psycheConfig.getProperty("AGENT_EMOTIONS").contains(emotion.trim().toLowerCase()))
 				   {
 					 isAgent = true;   
 				   }
 				   
-				   if(ConstantVariables.OBJECT_EMOTIONS.contains(emotion.trim().toLowerCase()))
+				   if(psycheConfig.getProperty("OBJECT_EMOTIONS").contains(emotion.trim().toLowerCase()))
 				   {
 					 isObject = true;   
 				   }
 				   
-				   if(ConstantVariables.EVENT_AGENT_EMOTIONS.contains(emotion.trim().toLowerCase()))
+				   if(psycheConfig.getProperty("EVENT_AGENT_EMOTIONS").contains(emotion.trim().toLowerCase()))
 				   {
 					 isEvent = true; 
 					 isAgent = true;
@@ -380,7 +380,7 @@ public class IndividualAgent {
 			   
 			   // *** Updating Working Iteration ***
 			   
-			   String updSimDataTabWrkItr = ConstantVariables.updSimDataWrkItrBySimID;
+			   String updSimDataTabWrkItr = constVars.updSimDataWrkItrBySimID();
 			   PreparedStatement psUpdWrkItr = conn.prepareStatement(updSimDataTabWrkItr);
 			   psUpdWrkItr.setInt(1, workingIter);
 			   psUpdWrkItr.setLong(2, simulation_id);
@@ -405,7 +405,7 @@ public class IndividualAgent {
 				 String emotion = emoIter.next();
 				 Integer emoOccurCount = (Integer)emoAttitudes.get(emotion).get("occurrence_count");
 				 Integer emoOccurredCount = (Integer)emoAttitudes.get(emotion).get("occurred_count");
-				 String updOccurCount = ConstantVariables.updEmoAttOccurCount;
+				 String updOccurCount = constVars.updEmoAttOccurCount();
 				 PreparedStatement psUpdEmoAttOccurCount = conn.prepareStatement(updOccurCount);
 				 psUpdEmoAttOccurCount.setInt(1, emoOccurCount);
 				 psUpdEmoAttOccurCount.setInt(2, emoOccurredCount);
@@ -430,7 +430,7 @@ public class IndividualAgent {
 			   
 			   // *** Start updating agent perception values
 			   
-			   String updAgentPercept = ConstantVariables.updAgentPerceptions;
+			   String updAgentPercept = constVars.updAgentPerceptions();
 			   PreparedStatement psUpdAgentPercept = conn.prepareStatement(updAgentPercept);
 			   psUpdAgentPercept.setBoolean(1, isEvent);
 			   psUpdAgentPercept.setBoolean(2, isAgent);
@@ -523,13 +523,13 @@ public class IndividualAgent {
 		
 		try{
 			
-			Class.forName(ConstantVariables.dbDriver).newInstance();
-			conn = DriverManager.getConnection(ConstantVariables.dbConnectString,
-					ConstantVariables.dbUserName, ConstantVariables.dbPassword);
+			Class.forName(constVars.getDBDriver()).newInstance();
+			conn = DriverManager.getConnection(constVars.getDBConnection(),
+					constVars.getDBUserName(), constVars.getDBPassword());
 			
 		// ************************* Get data for agent neighbours *****************************	
 			
-			PreparedStatement psQueryAgentNeighbours = conn.prepareStatement(ConstantVariables.queryAgentNeighbours);
+			PreparedStatement psQueryAgentNeighbours = conn.prepareStatement(constVars.queryAgentNeighbours());
 			psQueryAgentNeighbours.setInt(1, currIter);
 			psQueryAgentNeighbours.setInt(2, agentID);
 			psQueryAgentNeighbours.setInt(3, eventID);
@@ -670,7 +670,7 @@ public class IndividualAgent {
 	{
 		// Get the AGoal, IGoal and RGoal values
 		
-		String queryAgentTab = ConstantVariables.queryAgentTable;
+		String queryAgentTab = constVars.queryAgentTable();
 		PreparedStatement psAgentTab = conn.prepareStatement(queryAgentTab);
 		psAgentTab.setInt(1, currIter);
 		psAgentTab.setInt(2, agentID);
@@ -689,7 +689,7 @@ public class IndividualAgent {
 		
 		
 		// Get the agent_desirability from event_tab add to goal values
-		PreparedStatement psQueryEventTab = conn.prepareStatement(ConstantVariables.queryEventTab);
+		PreparedStatement psQueryEventTab = conn.prepareStatement(constVars.queryEventTab());
 		psQueryEventTab.setInt(1, currIter);
 		psQueryEventTab.setInt(2, eventID);
 		psQueryEventTab.setInt(3, agentID);
@@ -736,7 +736,7 @@ public class IndividualAgent {
 				
 				
 					// Update the observed emotions
-					PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+					PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 					psInsObservedEmos.setInt(1, currIter);
 					psInsObservedEmos.setInt(2, agentID);
 					psInsObservedEmos.setInt(3, eventID);
@@ -768,7 +768,7 @@ public class IndividualAgent {
 				
 				
 					// Update the observed emotions
-					PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+					PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 					psInsObservedEmos.setInt(1, currIter);
 					psInsObservedEmos.setInt(2, agentID);
 					psInsObservedEmos.setInt(3, eventID);
@@ -799,7 +799,7 @@ public class IndividualAgent {
 	{
 		// Get the AGoal, IGoal and RGoal values
 		
-		String queryAgentTab = ConstantVariables.queryAgentTable;
+		String queryAgentTab = constVars.queryAgentTable();
 		PreparedStatement psAgentTab = conn.prepareStatement(queryAgentTab);
 		psAgentTab.setInt(1, currIter);
 		psAgentTab.setInt(2, agentID);
@@ -818,7 +818,7 @@ public class IndividualAgent {
 		
 		
 		// Get the agent_desirability from event_tab add to goal values
-		PreparedStatement psQueryEventTab = conn.prepareStatement(ConstantVariables.queryEventTab);
+		PreparedStatement psQueryEventTab = conn.prepareStatement(constVars.queryEventTab());
 		psQueryEventTab.setInt(1, currIter);
 		psQueryEventTab.setInt(2, eventID);
 		psQueryEventTab.setInt(3, agentID);
@@ -880,7 +880,7 @@ public class IndividualAgent {
 						Double happyForIntensity = (happyForPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 						
 						// Update the observed emotions
-						PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+						PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 						psInsObservedEmos.setInt(1, currIter);
 						psInsObservedEmos.setInt(2, agentID);
 						psInsObservedEmos.setInt(3, eventID);
@@ -911,7 +911,7 @@ public class IndividualAgent {
 							Double sorryForIntensity = (sorryForPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 
 							// Update the observed emotions
-							PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+							PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 							psInsObservedEmos.setInt(1, currIter);
 							psInsObservedEmos.setInt(2, agentID);
 							psInsObservedEmos.setInt(3, eventID);
@@ -942,7 +942,7 @@ public class IndividualAgent {
 							Double resentmentIntensity = (resentmentPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 
 							// Update the observed emotions
-							PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+							PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 							psInsObservedEmos.setInt(1, currIter);
 							psInsObservedEmos.setInt(2, agentID);
 							psInsObservedEmos.setInt(3, eventID);
@@ -973,7 +973,7 @@ public class IndividualAgent {
 						Double gloatingIntensity = (gloatingPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 
 						// Update the observed emotions
-						PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+						PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 						psInsObservedEmos.setInt(1, currIter);
 						psInsObservedEmos.setInt(2, agentID);
 						psInsObservedEmos.setInt(3, eventID);
@@ -1009,7 +1009,7 @@ public class IndividualAgent {
     {
     	// Get the AGoal, IGoal and RGoal values
 		
-		String queryAgentTab = ConstantVariables.queryAgentTable;
+		String queryAgentTab = constVars.queryAgentTable();
 		PreparedStatement psAgentTab = conn.prepareStatement(queryAgentTab);
 		psAgentTab.setInt(1, currIter);
 		psAgentTab.setInt(2, agentID);
@@ -1028,7 +1028,7 @@ public class IndividualAgent {
 		
 		
 		// Get the agent_desirability from event_tab add to goal values
-		PreparedStatement psQueryEventTab = conn.prepareStatement(ConstantVariables.queryEventTab);
+		PreparedStatement psQueryEventTab = conn.prepareStatement(constVars.queryEventTab());
 		psQueryEventTab.setInt(1, currIter);
 		psQueryEventTab.setInt(2, eventID);
 		psQueryEventTab.setInt(3, agentID);
@@ -1081,7 +1081,7 @@ public class IndividualAgent {
 			Double hopeIntensity = (hopePotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 			
 			// Update the observed emotions
-			PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+			PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 			psInsObservedEmos.setInt(1, currIter);
 			psInsObservedEmos.setInt(2, agentID);
 			psInsObservedEmos.setInt(3, eventID);
@@ -1102,7 +1102,7 @@ public class IndividualAgent {
 			psInsObservedEmos.close();
 			
 			// Update previous state
-			PreparedStatement psInsPrevState = conn.prepareStatement(ConstantVariables.insPrevState);
+			PreparedStatement psInsPrevState = conn.prepareStatement(constVars.insPrevState());
 			psInsPrevState.setInt(1, eventID);
 			psInsPrevState.setInt(2, agentID);
 			psInsPrevState.setInt(3, currIter);
@@ -1129,7 +1129,7 @@ public class IndividualAgent {
 			Double fearIntensity = (fearPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 			
 			// Update the observed emotions
-			PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+			PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 			psInsObservedEmos.setInt(1, currIter);
 			psInsObservedEmos.setInt(2, agentID);
 			psInsObservedEmos.setInt(3, eventID);
@@ -1150,7 +1150,7 @@ public class IndividualAgent {
 			psInsObservedEmos.close();
 			
 			// Update previous state
-			PreparedStatement psInsPrevState = conn.prepareStatement(ConstantVariables.insPrevState);
+			PreparedStatement psInsPrevState = conn.prepareStatement(constVars.insPrevState());
 			psInsPrevState.setInt(1, eventID);
 			psInsPrevState.setInt(2, agentID);
 			psInsPrevState.setInt(3, currIter);
@@ -1179,7 +1179,7 @@ public class IndividualAgent {
 	{
 		// Get the AGoal, IGoal and RGoal values
 		
-				String queryAgentTab = ConstantVariables.queryAgentTable;
+				String queryAgentTab = constVars.queryAgentTable();
 				PreparedStatement psAgentTab = conn.prepareStatement(queryAgentTab);
 				psAgentTab.setInt(1, currIter);
 				psAgentTab.setInt(2, agentID);
@@ -1199,7 +1199,7 @@ public class IndividualAgent {
 		
 		// Get the values from event_tab
 		
-		PreparedStatement psQueryEventTab = conn.prepareStatement(ConstantVariables.queryEventTab);
+		PreparedStatement psQueryEventTab = conn.prepareStatement(constVars.queryEventTab());
 		psQueryEventTab.setInt(1, currIter);
 		psQueryEventTab.setInt(2, eventID);
 		psQueryEventTab.setInt(3, agentID);
@@ -1244,7 +1244,7 @@ public class IndividualAgent {
 		
 		
 		// Get the previous hope/fear potential
-		PreparedStatement psQueryPrevState = conn.prepareStatement(ConstantVariables.queryPrevState);
+		PreparedStatement psQueryPrevState = conn.prepareStatement(constVars.queryPrevState());
 		psQueryPrevState.setInt(1, (currIter - 1));
 		psQueryPrevState.setInt(2, eventID);
 		psQueryPrevState.setInt(3, agentID);
@@ -1289,7 +1289,7 @@ public class IndividualAgent {
 			Double satisfactionIntensity = (satisfactionPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 			
 			// Update the observed emotions
-						PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+						PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 						psInsObservedEmos.setInt(1, currIter);
 						psInsObservedEmos.setInt(2, agentID);
 						psInsObservedEmos.setInt(3, eventID);
@@ -1320,7 +1320,7 @@ public class IndividualAgent {
 			Double fearsConfirmedIntensity = (fearsConfirmedPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 			
 			// Update the observed emotions
-						PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+						PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 						psInsObservedEmos.setInt(1, currIter);
 						psInsObservedEmos.setInt(2, agentID);
 						psInsObservedEmos.setInt(3, eventID);
@@ -1349,7 +1349,7 @@ public class IndividualAgent {
 			Double reliefIntensity = (reliefPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 			
 			// Update the observed emotions
-						PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+						PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 						psInsObservedEmos.setInt(1, currIter);
 						psInsObservedEmos.setInt(2, agentID);
 						psInsObservedEmos.setInt(3, eventID);
@@ -1378,7 +1378,7 @@ public class IndividualAgent {
 			Double disappointmentIntensity = (disappointmentPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 			
 			// Update the observed emotions
-						PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+						PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 						psInsObservedEmos.setInt(1, currIter);
 						psInsObservedEmos.setInt(2, agentID);
 						psInsObservedEmos.setInt(3, eventID);
@@ -1400,7 +1400,7 @@ public class IndividualAgent {
 		}
 		
 		// Update previous state to re-set hope/fear potentials
-		PreparedStatement psInsPrevState = conn.prepareStatement(ConstantVariables.insPrevState);
+		PreparedStatement psInsPrevState = conn.prepareStatement(constVars.insPrevState());
 		psInsPrevState.setInt(1, eventID);
 		psInsPrevState.setInt(2, agentID);
 		psInsPrevState.setInt(3, currIter);
@@ -1458,7 +1458,7 @@ public class IndividualAgent {
 					Double prideIntensity = (pridePotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 					
 					// Update the observed emotions
-					PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+					PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 					psInsObservedEmos.setInt(1, currIter);
 					psInsObservedEmos.setInt(2, agentID);
 					psInsObservedEmos.setInt(3, -1);
@@ -1486,7 +1486,7 @@ public class IndividualAgent {
 					Double selfReproachIntensity = (selfReproachPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 					
 					// Update the observed emotions
-					PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+					PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 					psInsObservedEmos.setInt(1, currIter);
 					psInsObservedEmos.setInt(2, agentID);
 					psInsObservedEmos.setInt(3, -1);
@@ -1548,7 +1548,7 @@ public class IndividualAgent {
 					Double appreciationIntensity = (appreciationPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 					
 					// Update the observed emotions
-					PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+					PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 					psInsObservedEmos.setInt(1, currIter);
 					psInsObservedEmos.setInt(2, agentID);
 					psInsObservedEmos.setInt(3, -1);
@@ -1575,7 +1575,7 @@ public class IndividualAgent {
 					Double reproachIntensity = (reproachPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 					
 					// Update the observed emotions
-					PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+					PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 					psInsObservedEmos.setInt(1, currIter);
 					psInsObservedEmos.setInt(2, agentID);
 					psInsObservedEmos.setInt(3, -1);
@@ -1608,7 +1608,7 @@ public class IndividualAgent {
 	{
 		// Get the AGoal, IGoal and RGoal values
 		
-		String queryAgentTab = ConstantVariables.queryAgentTable;
+		String queryAgentTab = constVars.queryAgentTable();
 		PreparedStatement psAgentTab = conn.prepareStatement(queryAgentTab);
 		psAgentTab.setInt(1, currIter);
 		psAgentTab.setInt(2, agentID);
@@ -1628,7 +1628,7 @@ public class IndividualAgent {
 		
 		// Get the values from event_tab
 		
-		PreparedStatement psQueryEventTab = conn.prepareStatement(ConstantVariables.queryEventTab);
+		PreparedStatement psQueryEventTab = conn.prepareStatement(constVars.queryEventTab());
 		psQueryEventTab.setInt(1, currIter);
 		psQueryEventTab.setInt(2, eventID);
 		psQueryEventTab.setInt(3, agentID);
@@ -1699,7 +1699,7 @@ public class IndividualAgent {
 					Double gratitudeIntensity = (gratitudePotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 					
 					// Update the observed emotions
-					PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+					PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 					psInsObservedEmos.setInt(1, currIter);
 					psInsObservedEmos.setInt(2, agentID);
 					psInsObservedEmos.setInt(3, eventID);
@@ -1728,7 +1728,7 @@ public class IndividualAgent {
 					Double angerIntensity = (angerPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 					
 					// Update the observed emotions
-					PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+					PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 					psInsObservedEmos.setInt(1, currIter);
 					psInsObservedEmos.setInt(2, agentID);
 					psInsObservedEmos.setInt(3, eventID);
@@ -1761,7 +1761,7 @@ public class IndividualAgent {
 	{
 		// Get the AGoal, IGoal and RGoal values
 		
-		String queryAgentTab = ConstantVariables.queryAgentTable;
+		String queryAgentTab = constVars.queryAgentTable();
 		PreparedStatement psAgentTab = conn.prepareStatement(queryAgentTab);
 		psAgentTab.setInt(1, currIter);
 		psAgentTab.setInt(2, agentID);
@@ -1781,7 +1781,7 @@ public class IndividualAgent {
 		
 		// Get the values from event_tab
 		
-		PreparedStatement psQueryEventTab = conn.prepareStatement(ConstantVariables.queryEventTab);
+		PreparedStatement psQueryEventTab = conn.prepareStatement(constVars.queryEventTab());
 		psQueryEventTab.setInt(1, currIter);
 		psQueryEventTab.setInt(2, eventID);
 		psQueryEventTab.setInt(3, agentID);
@@ -1853,7 +1853,7 @@ public class IndividualAgent {
 					Double gratificationIntensity = (gratificationPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 					
 					// Update the observed emotions
-					PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+					PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 					psInsObservedEmos.setInt(1, currIter);
 					psInsObservedEmos.setInt(2, agentID);
 					psInsObservedEmos.setInt(3, eventID);
@@ -1883,7 +1883,7 @@ public class IndividualAgent {
 					Double remorseIntensity = (remorsePotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 					
 					// Update the observed emotions
-					PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+					PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 					psInsObservedEmos.setInt(1, currIter);
 					psInsObservedEmos.setInt(2, agentID);
 					psInsObservedEmos.setInt(3, eventID);
@@ -1917,7 +1917,7 @@ public class IndividualAgent {
 		Double emoFactor = (Double)emoAttitudes.get(emoToBeInvoked).get("emotion_factor");
 		
 		// Get values from object_tab
-		PreparedStatement psQueryObjectTab = conn.prepareStatement(ConstantVariables.queryObjectTab);
+		PreparedStatement psQueryObjectTab = conn.prepareStatement(constVars.queryObjectTab());
 		psQueryObjectTab.setInt(1, currIter);
 		psQueryObjectTab.setInt(2, objectID);
 		psQueryObjectTab.setInt(3, agentID);
@@ -1954,7 +1954,7 @@ public class IndividualAgent {
 			Double likingIntensity = (likingPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 			
 			// Update the observed emotions
-			PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+			PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 			psInsObservedEmos.setInt(1, currIter);
 			psInsObservedEmos.setInt(2, agentID);
 			psInsObservedEmos.setInt(3, -1);
@@ -1981,7 +1981,7 @@ public class IndividualAgent {
 			Double dislikingIntensity = (dislikingPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
 			
 			// Update the observed emotions
-			PreparedStatement psInsObservedEmos = conn.prepareStatement(ConstantVariables.insObservedEmos);
+			PreparedStatement psInsObservedEmos = conn.prepareStatement(constVars.insObservedEmos());
 			psInsObservedEmos.setInt(1, currIter);
 			psInsObservedEmos.setInt(2, agentID);
 			psInsObservedEmos.setInt(3, -1);

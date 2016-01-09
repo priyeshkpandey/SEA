@@ -1,4 +1,4 @@
-package psychologicalCore;
+package com.services.psychological.core;
 
 /* *** The methods of CommonModels class should not have any parameters.
  * *** The methods should have a return value

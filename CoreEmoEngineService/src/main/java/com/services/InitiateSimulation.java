@@ -10,12 +10,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import psychologicalCore.ConstantVariables;
-import psychologicalCore.ExecuteSingleSimulationStep;
-
 import com.services.dao.SimulationDAO;
 import com.services.entities.InitiateSimulationReqBody;
 import com.services.entities.Simulation;
+import com.services.psychological.core.ConstantVariables;
+import com.services.psychological.core.ExecuteSingleSimulationStep;
 
 @RestController
 public class InitiateSimulation extends BaseController {
@@ -43,8 +42,8 @@ public class InitiateSimulation extends BaseController {
 		SimulationDAO simDAO = context.getBean(SimulationDAO.class);
 		Simulation simToRun = simDAO.getSimulationByUserAndSimId(userId, simId);
 
-		ConstantVariables.simulationId = simToRun.getSimId();
-		ConstantVariables.userID = simToRun.getUserId();
+		ConstantVariables constVars = new ConstantVariables(simToRun.getUserId(),
+				simToRun.getSimId());
 
 		while ((simToRun.getCurrIter() <= simToRun.getWorkingIter())
 				&& (simToRun.getCurrIter() <= simToRun.getMaxIter())) {
@@ -53,8 +52,8 @@ public class InitiateSimulation extends BaseController {
 
 			for (int agentId = 1; agentId <= noOfAgents; agentId++) {
 
-				new ExecuteSingleSimulationStep(simId, simToRun.getCurrIter(),
-						agentId, personOfInterest).initModels();
+				new ExecuteSingleSimulationStep(simToRun.getCurrIter(),
+						agentId, personOfInterest, constVars).initModels();
 			}
 
 			

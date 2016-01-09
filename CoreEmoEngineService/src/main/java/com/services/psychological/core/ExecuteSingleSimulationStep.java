@@ -1,4 +1,4 @@
-package psychologicalCore;
+package com.services.psychological.core;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,7 +23,9 @@ public class ExecuteSingleSimulationStep {
 
 	HashMap<String, HashMap<String, Object>> models = new HashMap<String, HashMap<String, Object>>();
 
+	private ConstantVariables constVars;
 	private Long simulationId;
+	private String userID;
 	private Integer agentId;
 	private Long currIter;
 	private Integer sourceAgent;
@@ -41,32 +43,28 @@ public class ExecuteSingleSimulationStep {
 	private int lastIndex;
 	Connection conn;
 
-	public ExecuteSingleSimulationStep() {
-		simulationId = 0l;
-		agentId = 0;
-		currIter = 0l;
-		thirdPerson = 0;
-
-	}
-
-	public ExecuteSingleSimulationStep(Long simId, Long iter, int agent,
-			Integer thrdPerson) {
-		simulationId = simId;
+	public ExecuteSingleSimulationStep(Long iter, int agent,
+			Integer thrdPerson, ConstantVariables constVars) {
+		simulationId = constVars.getSimId();
 		agentId = agent;
 		currIter = iter;
 		thirdPerson = thrdPerson;
+		this.userID = constVars.getUserId();
+		this.constVars = constVars;
 	}
 
 	public void initModels() {
+		
+		 
 
 		try {
-			Class.forName(ConstantVariables.dbDriver).newInstance();
+			Class.forName(constVars.getDBDriver()).newInstance();
 			conn = DriverManager.getConnection(
-					ConstantVariables.dbConnectString,
-					ConstantVariables.dbUserName, ConstantVariables.dbPassword);
+					constVars.getDBConnection(),
+					constVars.getDBUserName(), constVars.getDBPassword());
 
 			PreparedStatement psModels = conn
-					.prepareStatement(ConstantVariables.queryModelResources);
+					.prepareStatement(constVars.queryModelResources());
 			psModels.setLong(1, simulationId);
 			psModels.setInt(2, agentId);
 			ResultSet rsModels = psModels.executeQuery();
@@ -161,7 +159,7 @@ public class ExecuteSingleSimulationStep {
 			// ***** Individual Agent's Perception *****
 
 			new IndividualAgent(simulationId, agentId, targetEvent,
-					targetObject).agentPerception();
+					targetObject, constVars).agentPerception();
 
 			// ***** Start interactions and set table values *****
 
@@ -245,9 +243,9 @@ public class ExecuteSingleSimulationStep {
 					existentialQuery.append(condColsArray[i] + " = "
 							+ targetObject + " AND");
 				} else if (condColsArray[i].equalsIgnoreCase("user_id")) {
-					insertQuery.append("'" + ConstantVariables.userID + "', ");
+					insertQuery.append("'" + constVars.getUserId() + "', ");
 					existentialQuery.append(condColsArray[i] + " = "
-							+ ConstantVariables.userID + " AND");
+							+ constVars.getUserId() + " AND");
 				} else if (condColsArray[i].equalsIgnoreCase("variable")) {
 					insertQuery.append("'" + targetVariable + "', ");
 					existentialQuery.append(condColsArray[i] + " = "
@@ -341,8 +339,8 @@ public class ExecuteSingleSimulationStep {
 			ModelResponseExtractor modelExtractor = new ModelResponseExtractor();
 
 			Map<String, Object> urlParams = new HashMap<String, Object>();
-			urlParams.put("simId", ConstantVariables.userID);
-			urlParams.put("userId", ConstantVariables.simulationId);
+			urlParams.put("simId", constVars.getSimId());
+			urlParams.put("userId", constVars.getUserId());
 			urlParams.put("iter", currIter);
 
 			ModelValue modValResponse = restTemplate.execute(apiPath,
@@ -400,7 +398,7 @@ public class ExecuteSingleSimulationStep {
 			} else if (condColsArray[i].equalsIgnoreCase("user_id")) {
 
 				updQuery.append(condColsArray[i] + " = " + "'"
-						+ ConstantVariables.userID + "'" + " AND ");
+						+ constVars.getUserId() + "'" + " AND ");
 
 			} else if (condColsArray[i].equalsIgnoreCase("variable")) {
 
@@ -436,7 +434,7 @@ public class ExecuteSingleSimulationStep {
 		try {
 
 			PreparedStatement psQueryInteract = conn
-					.prepareStatement(ConstantVariables.queryInteractModels);
+					.prepareStatement(constVars.queryInteractModels());
 			psQueryInteract.setLong(1, currIter);
 			psQueryInteract.setInt(2, agentId);
 
