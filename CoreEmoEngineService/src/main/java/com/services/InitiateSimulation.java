@@ -56,6 +56,7 @@ public class InitiateSimulation extends BaseController {
 						agentId, personOfInterest, constVars).initModels();
 			}
 
+			simToRun = simDAO.getSimulationByUserAndSimId(userId, simId);
 			
 		}
 		
