@@ -1,7 +1,5 @@
 package com.services.psychological.core;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,10 +8,10 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,6 +22,7 @@ import com.services.dao.AgentNetworkDAO;
 import com.services.dao.AgentTabDAO;
 import com.services.dao.EmotionalAttitudesDAO;
 import com.services.dao.EventTabDAO;
+import com.services.dao.ObjectTabDAO;
 import com.services.dao.ObservedEmotionsDAO;
 import com.services.dao.PreviousStateDAO;
 import com.services.dao.SimulationDAO;
@@ -31,6 +30,7 @@ import com.services.entities.AgentNetwork;
 import com.services.entities.AgentTab;
 import com.services.entities.EmotionalAttitudes;
 import com.services.entities.EventTab;
+import com.services.entities.ObjectTab;
 import com.services.entities.ObservedEmotions;
 import com.services.entities.PreviousState;
 import com.services.entities.Simulation;
@@ -40,7 +40,7 @@ public class IndividualAgentComponent {
 
 	private Long agentID; // used but not assigned a value
 	private Long eventID; // used but not assigned a value
-	private int objectID; // used but not assigned a value
+	private Long objectID; // used but not assigned a value
 	private boolean isAGoal;
 	private boolean isIGoal;
 	private boolean isRGoal;
@@ -83,7 +83,7 @@ public class IndividualAgentComponent {
 	ApplicationContext context;
 
 	public IndividualAgentComponent(Long simId, Long agentId, Long eventId,
-			int objId, ConstantVariables constVars) {
+			Long objId, ConstantVariables constVars) {
 		agentID = agentId;
 		eventID = eventId;
 		objectID = objId;
@@ -427,27 +427,27 @@ public class IndividualAgentComponent {
 			} else if (emoToBeInvoked.equalsIgnoreCase("pride")
 					|| emoToBeInvoked.equalsIgnoreCase("self-reproach")) {
 
-				invokeAgentCogUnitEmos(emoToBeInvoked, conn);
+				invokeAgentCogUnitEmos(emoToBeInvoked);
 
 			} else if (emoToBeInvoked.equalsIgnoreCase("appreciation")
 					|| emoToBeInvoked.equalsIgnoreCase("reproach")) {
 
-				invokeAgentNoCogUnitEmos(emoToBeInvoked, conn);
+				invokeAgentNoCogUnitEmos(emoToBeInvoked);
 
 			} else if (emoToBeInvoked.equalsIgnoreCase("gratitude")
 					|| emoToBeInvoked.equalsIgnoreCase("anger")) {
 
-				invokeEventAgentNoCogUnitEmos(emoToBeInvoked, conn);
+				invokeEventAgentNoCogUnitEmos(emoToBeInvoked);
 
 			} else if (emoToBeInvoked.equalsIgnoreCase("gratification")
 					|| emoToBeInvoked.equalsIgnoreCase("remorse")) {
 
-				invokeEventAgentCogUnitEmos(emoToBeInvoked, conn);
+				invokeEventAgentCogUnitEmos(emoToBeInvoked);
 
 			} else if (emoToBeInvoked.equalsIgnoreCase("liking")
 					|| emoToBeInvoked.equalsIgnoreCase("disliking")) {
 
-				invokeObjectEmos(emoToBeInvoked, conn);
+				invokeObjectEmos(emoToBeInvoked);
 			} else {
 				System.err.println("Not a valid emotion for this iteration.");
 			}
@@ -968,5 +968,509 @@ public class IndividualAgentComponent {
 		prevStateDAO.saveAndFlush(prevState);
 
 	}
+	
+	private void invokeAgentCogUnitEmos(String emoToBeInvoked)
+	{
+		Double emoFactor = (Double)emoAttitudes.get(emoToBeInvoked).get("emotion_factor");
+		
+		Iterator<Long> iterNeighbours = neighbours.keySet().iterator();
+		
+		while(iterNeighbours.hasNext())
+		{
+			Long agentNeighbour = iterNeighbours.next();
+			
+			if((Boolean)neighbours.get(agentNeighbour).get("emotion_target"))
+			{
+				praiseworthiness = (Double)neighbours.get(agentNeighbour).get("praiseworthiness");
+				Double expDiff = (Double)neighbours.get(agentNeighbour).get("expectation_deviation");
+				Double cogUnit = (Double)neighbours.get(agentNeighbour).get("cognitive_unit_strength");
+				
+				// Get Agent Global Variables
+				
+				Double aSenseOfReality = (Double)neighbours.get(agentNeighbour).get("agent_sense_of_reality");
+				Double aPsychoProximity = (Double)neighbours.get(agentNeighbour).get("agent_psycho_proximity");
+				Double aUnexpectedness = (Double)neighbours.get(agentNeighbour).get("agent_unexpectedness");
+				Double aArousal = (Double)neighbours.get(agentNeighbour).get("agent_arousal");
+				
+				agentGlobalVars = ((aSenseOfReality + aPsychoProximity + aUnexpectedness + aArousal)+4)/8.0;
+				
+				// Invoke the pride/self-reproach emotion below
+				
+				if(emoToBeInvoked.equalsIgnoreCase("pride")
+						&& (praiseworthiness > 0)
+						&& (cogUnit > 0))
+				{
+					Double pridePotential = (Double)EmotionFunctions.calcPridePotential(emoFactor, Math.abs(praiseworthiness), expDiff, cogUnit, agentGlobalVars);
+					Double prideIntensity = (pridePotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
+					
+					// Update the observed emotions
+					ObservedEmotions obsEmos = new ObservedEmotions();
+					obsEmos.setIterNo(currIter);
+					obsEmos.setAgentId(agentID);
+					obsEmos.setTargetEvent(-1l);
+					obsEmos.setTargetNeighbour(agentNeighbour);
+					obsEmos.setTargetObj(-1l);
+					obsEmos.setEmotion(emoToBeInvoked);
+					obsEmos.setEmoPot(pridePotential);
+					obsEmos.setEmoIntensity(prideIntensity);
+					obsEmos.setUserId(constVars.getUserId());
+					obsEmos.setSimId(constVars.getSimId());
+					ObservedEmotionsDAO obsEmosDAO = context
+							.getBean(ObservedEmotionsDAO.class);
+					obsEmosDAO.saveAndFlush(obsEmos);
+					
+				}
+				else if(emoToBeInvoked.equalsIgnoreCase("self-reproach")
+						&& (praiseworthiness < 0)
+						&& (cogUnit > 0))
+				{
+					Double selfReproachPotential = (Double)EmotionFunctions.calcSelfReproachPotential(emoFactor, Math.abs(praiseworthiness), expDiff, cogUnit, agentGlobalVars);
+					Double selfReproachIntensity = (selfReproachPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
+					
+					// Update the observed emotions
+					ObservedEmotions obsEmos = new ObservedEmotions();
+					obsEmos.setIterNo(currIter);
+					obsEmos.setAgentId(agentID);
+					obsEmos.setTargetEvent(-1l);
+					obsEmos.setTargetNeighbour(agentNeighbour);
+					obsEmos.setTargetObj(-1l);
+					obsEmos.setEmotion(emoToBeInvoked);
+					obsEmos.setEmoPot(selfReproachPotential);
+					obsEmos.setEmoIntensity(selfReproachIntensity);
+					obsEmos.setUserId(constVars.getUserId());
+					obsEmos.setSimId(constVars.getSimId());
+					ObservedEmotionsDAO obsEmosDAO = context
+							.getBean(ObservedEmotionsDAO.class);
+					obsEmosDAO.saveAndFlush(obsEmos);
+				}
+				
+				// Invoked the pride/self-reproach emotion above
+				
+			}
+					
+		}
+	}
+	
+	private void invokeAgentNoCogUnitEmos(String emoToBeInvoked)
+	{
+		Double emoFactor = (Double)emoAttitudes.get(emoToBeInvoked).get("emotion_factor");
+		
+		Iterator<Long> iterNeighbours = neighbours.keySet().iterator();
+		
+		while(iterNeighbours.hasNext())
+		{
+			Long agentNeighbour = iterNeighbours.next();
+			
+			if((Boolean)neighbours.get(agentNeighbour).get("emotion_target"))
+			{
+				praiseworthiness = (Double)neighbours.get(agentNeighbour).get("praiseworthiness");
+				Double expDiff = (Double)neighbours.get(agentNeighbour).get("expectation_deviation");
+				
+				
+				// Get Agent Global Variables
+				
+				Double aSenseOfReality = (Double)neighbours.get(agentNeighbour).get("agent_sense_of_reality");
+				Double aPsychoProximity = (Double)neighbours.get(agentNeighbour).get("agent_psycho_proximity");
+				Double aUnexpectedness = (Double)neighbours.get(agentNeighbour).get("agent_unexpectedness");
+				Double aArousal = (Double)neighbours.get(agentNeighbour).get("agent_arousal");
+				
+				agentGlobalVars = ((aSenseOfReality + aPsychoProximity + aUnexpectedness + aArousal)+4)/8.0;
+				
+				// Invoke the appreciation/reproach emotion below
+				
+				if(emoToBeInvoked.equalsIgnoreCase("appreciation")
+						&& (praiseworthiness > 0))
+				{
+					Double appreciationPotential = (Double)EmotionFunctions.calcAppreciationPotential(emoFactor, Math.abs(praiseworthiness), expDiff, agentGlobalVars);
+					Double appreciationIntensity = (appreciationPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
+					
+					// Update the observed emotions
+					ObservedEmotions obsEmos = new ObservedEmotions();
+					obsEmos.setIterNo(currIter);
+					obsEmos.setAgentId(agentID);
+					obsEmos.setTargetEvent(-1l);
+					obsEmos.setTargetNeighbour(agentNeighbour);
+					obsEmos.setTargetObj(-1l);
+					obsEmos.setEmotion(emoToBeInvoked);
+					obsEmos.setEmoPot(appreciationPotential);
+					obsEmos.setEmoIntensity(appreciationIntensity);
+					obsEmos.setUserId(constVars.getUserId());
+					obsEmos.setSimId(constVars.getSimId());
+					ObservedEmotionsDAO obsEmosDAO = context
+							.getBean(ObservedEmotionsDAO.class);
+					obsEmosDAO.saveAndFlush(obsEmos);
+				}
+				else if(emoToBeInvoked.equalsIgnoreCase("reproach")
+						&& (praiseworthiness < 0))
+				{
+					Double reproachPotential = (Double)EmotionFunctions.calcReproachPotential(emoFactor, Math.abs(praiseworthiness), expDiff, agentGlobalVars);
+					Double reproachIntensity = (reproachPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
+					
+					// Update the observed emotions
+					ObservedEmotions obsEmos = new ObservedEmotions();
+					obsEmos.setIterNo(currIter);
+					obsEmos.setAgentId(agentID);
+					obsEmos.setTargetEvent(-1l);
+					obsEmos.setTargetNeighbour(agentNeighbour);
+					obsEmos.setTargetObj(-1l);
+					obsEmos.setEmotion(emoToBeInvoked);
+					obsEmos.setEmoPot(reproachPotential);
+					obsEmos.setEmoIntensity(reproachIntensity);
+					obsEmos.setUserId(constVars.getUserId());
+					obsEmos.setSimId(constVars.getSimId());
+					ObservedEmotionsDAO obsEmosDAO = context
+							.getBean(ObservedEmotionsDAO.class);
+					obsEmosDAO.saveAndFlush(obsEmos);
+				}
+				
+				
+				// Invoked the appreciation/reproach emotion above
+				
+			}
+					
+		}
+				
+	}
+	
+	private void invokeEventAgentNoCogUnitEmos(String emoToBeInvoked)
+	{
+		AgentTabDAO agentDAO = context.getBean(AgentTabDAO.class);
+		AgentTab agent = agentDAO.getAgentByUserIdSimIdAgentIdAndIter(
+				constVars.getUserId(), constVars.getSimId(), agentID, currIter);
+
+		AGoalValue = agent.getaGoalValue();
+		IGoalValue = agent.getiGoalValue();
+		RGoalValue = agent.getrGoalValue();
+
+		EventTabDAO eventTabDAO = context.getBean(EventTabDAO.class);
+		List<EventTab> events = eventTabDAO
+				.getEventsBySimIdUserIdIterEventAndAgent(constVars.getSimId(),
+						constVars.getUserId(), currIter, eventID, agentID);
+		Double agentDesire = 0.0;
+		
+		Double eSenseOfReality = 0.0;
+		Double ePsychoProximity = 0.0;
+		Double eUnexpectedness = 0.0;
+		Double eArousal = 0.0;
+		
+		for(EventTab event:events)
+		{
+			agentDesire = event.getAgentDesirability();
+			
+			// Get the event global variables component
+			
+			eSenseOfReality = event.getEventSenseOfReality();
+			ePsychoProximity = event.getEventPsychoProximity();
+			eUnexpectedness = event.getEventUnexpectedness();
+			eArousal = event.getEventArousal();
+		}
+		
+		eventGlobalVars = ((eSenseOfReality + ePsychoProximity 
+		           + eUnexpectedness + eArousal)+4)/8.0;
+		
+		desireSelf = ((AGoalValue + IGoalValue + RGoalValue + agentDesire)+4)/8.0;
+		
+		Double emoFactor = (Double)emoAttitudes.get(emoToBeInvoked).get("emotion_factor");
+		
+		Iterator<Long> iterNeighbours = neighbours.keySet().iterator();
+		
+		while(iterNeighbours.hasNext())
+		{
+			Long agentNeighbour = iterNeighbours.next();
+			
+			if((Boolean)neighbours.get(agentNeighbour).get("emotion_target"))
+			{
+				praiseworthiness = (Double)neighbours.get(agentNeighbour).get("praiseworthiness");
+				Double expDiff = (Double)neighbours.get(agentNeighbour).get("expectation_deviation");
+				
+				
+				// Get Agent Global Variables
+				
+				Double aSenseOfReality = (Double)neighbours.get(agentNeighbour).get("agent_sense_of_reality");
+				Double aPsychoProximity = (Double)neighbours.get(agentNeighbour).get("agent_psycho_proximity");
+				Double aUnexpectedness = (Double)neighbours.get(agentNeighbour).get("agent_unexpectedness");
+				Double aArousal = (Double)neighbours.get(agentNeighbour).get("agent_arousal");
+				
+				agentGlobalVars = ((aSenseOfReality + aPsychoProximity + aUnexpectedness + aArousal)+4)/8.0;
+				
+				// Invoke the gratitude/anger emotion below
+				
+				if(emoToBeInvoked.equalsIgnoreCase("gratitude")
+						&& (desireSelf > 0)
+						&& (praiseworthiness > 0))
+				{
+					Double gratitudePotential = (Double)EmotionFunctions.calcGratitudePotential(emoFactor, Math.abs(praiseworthiness), Math.abs(desireSelf), 
+							expDiff, agentGlobalVars, eventGlobalVars);
+					Double gratitudeIntensity = (gratitudePotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
+					
+					// Update the observed emotions
+					ObservedEmotions obsEmos = new ObservedEmotions();
+					obsEmos.setIterNo(currIter);
+					obsEmos.setAgentId(agentID);
+					obsEmos.setTargetEvent(eventID);
+					obsEmos.setTargetNeighbour(agentNeighbour);
+					obsEmos.setTargetObj(-1l);
+					obsEmos.setEmotion(emoToBeInvoked);
+					obsEmos.setEmoPot(gratitudePotential);
+					obsEmos.setEmoIntensity(gratitudeIntensity);
+					obsEmos.setUserId(constVars.getUserId());
+					obsEmos.setSimId(constVars.getSimId());
+					ObservedEmotionsDAO obsEmosDAO = context
+							.getBean(ObservedEmotionsDAO.class);
+					obsEmosDAO.saveAndFlush(obsEmos);
+				}
+				else if(emoToBeInvoked.equalsIgnoreCase("anger")
+						&& (desireSelf < 0)
+						&& (praiseworthiness < 0))
+				{
+					Double angerPotential = (Double)EmotionFunctions.calcAngerPotential(emoFactor, Math.abs(praiseworthiness), Math.abs(desireSelf), 
+							expDiff, agentGlobalVars, eventGlobalVars);
+					Double angerIntensity = (angerPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
+					
+					// Update the observed emotions
+					ObservedEmotions obsEmos = new ObservedEmotions();
+					obsEmos.setIterNo(currIter);
+					obsEmos.setAgentId(agentID);
+					obsEmos.setTargetEvent(eventID);
+					obsEmos.setTargetNeighbour(agentNeighbour);
+					obsEmos.setTargetObj(-1l);
+					obsEmos.setEmotion(emoToBeInvoked);
+					obsEmos.setEmoPot(angerPotential);
+					obsEmos.setEmoIntensity(angerIntensity);
+					obsEmos.setUserId(constVars.getUserId());
+					obsEmos.setSimId(constVars.getSimId());
+					ObservedEmotionsDAO obsEmosDAO = context
+							.getBean(ObservedEmotionsDAO.class);
+					obsEmosDAO.saveAndFlush(obsEmos);
+				}
+				
+				
+				// Invoked the gratitude/anger emotion above
+				
+			}
+					
+		}
+		
+	}
+	
+	
+	private void invokeEventAgentCogUnitEmos(String emoToBeInvoked)
+	{
+		AgentTabDAO agentDAO = context.getBean(AgentTabDAO.class);
+		AgentTab agent = agentDAO.getAgentByUserIdSimIdAgentIdAndIter(
+				constVars.getUserId(), constVars.getSimId(), agentID, currIter);
+
+		AGoalValue = agent.getaGoalValue();
+		IGoalValue = agent.getiGoalValue();
+		RGoalValue = agent.getrGoalValue();
+
+		EventTabDAO eventTabDAO = context.getBean(EventTabDAO.class);
+		List<EventTab> events = eventTabDAO
+				.getEventsBySimIdUserIdIterEventAndAgent(constVars.getSimId(),
+						constVars.getUserId(), currIter, eventID, agentID);
+		Double agentDesire = 0.0;
+		
+		Double eSenseOfReality = 0.0;
+		Double ePsychoProximity = 0.0;
+		Double eUnexpectedness = 0.0;
+		Double eArousal = 0.0;
+		
+		for(EventTab event:events)
+		{
+			agentDesire = event.getAgentDesirability();
+			
+			// Get the event global variables component
+			
+			eSenseOfReality = event.getEventSenseOfReality();
+			ePsychoProximity = event.getEventPsychoProximity();
+			eUnexpectedness = event.getEventUnexpectedness();
+			eArousal = event.getEventArousal();
+		}
+		
+		
+		eventGlobalVars = ((eSenseOfReality + ePsychoProximity 
+		           + eUnexpectedness + eArousal)+4)/8.0;
+		
+		desireSelf = ((AGoalValue + IGoalValue + RGoalValue + agentDesire)+4)/8.0;
+		
+		Double emoFactor = (Double)emoAttitudes.get(emoToBeInvoked).get("emotion_factor");
+		
+		Iterator<Long> iterNeighbours = neighbours.keySet().iterator();
+		
+		while(iterNeighbours.hasNext())
+		{
+			Long agentNeighbour = iterNeighbours.next();
+			
+			if((Boolean)neighbours.get(agentNeighbour).get("emotion_target"))
+			{
+				praiseworthiness = (Double)neighbours.get(agentNeighbour).get("praiseworthiness");
+				Double expDiff = (Double)neighbours.get(agentNeighbour).get("expectation_deviation");
+				Double cogUnit = (Double)neighbours.get(agentNeighbour).get("cognitive_unit_strength");
+				
+				// Get Agent Global Variables
+				
+				Double aSenseOfReality = (Double)neighbours.get(agentNeighbour).get("agent_sense_of_reality");
+				Double aPsychoProximity = (Double)neighbours.get(agentNeighbour).get("agent_psycho_proximity");
+				Double aUnexpectedness = (Double)neighbours.get(agentNeighbour).get("agent_unexpectedness");
+				Double aArousal = (Double)neighbours.get(agentNeighbour).get("agent_arousal");
+				
+				agentGlobalVars = ((aSenseOfReality + aPsychoProximity + aUnexpectedness + aArousal)+4)/8.0;
+				
+				// Invoke the gratification/remorse emotion below
+				
+				if(emoToBeInvoked.equalsIgnoreCase("gratification")
+						&& (desireSelf > 0)
+						&& (praiseworthiness > 0)
+						&& (cogUnit > 0))
+				{
+					Double gratificationPotential = (Double)EmotionFunctions.calcGratificationPotential(emoFactor, Math.abs(praiseworthiness), Math.abs(desireSelf), 
+							expDiff, cogUnit, agentGlobalVars, eventGlobalVars);
+					Double gratificationIntensity = (gratificationPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
+					
+					// Update the observed emotions
+					ObservedEmotions obsEmos = new ObservedEmotions();
+					obsEmos.setIterNo(currIter);
+					obsEmos.setAgentId(agentID);
+					obsEmos.setTargetEvent(eventID);
+					obsEmos.setTargetNeighbour(agentNeighbour);
+					obsEmos.setTargetObj(-1l);
+					obsEmos.setEmotion(emoToBeInvoked);
+					obsEmos.setEmoPot(gratificationPotential);
+					obsEmos.setEmoIntensity(gratificationIntensity);
+					obsEmos.setUserId(constVars.getUserId());
+					obsEmos.setSimId(constVars.getSimId());
+					ObservedEmotionsDAO obsEmosDAO = context
+							.getBean(ObservedEmotionsDAO.class);
+					obsEmosDAO.saveAndFlush(obsEmos);
+				}
+				else if(emoToBeInvoked.equalsIgnoreCase("remorse")
+						&& (desireSelf < 0)
+						&& (praiseworthiness < 0)
+						&& (cogUnit > 0))
+				{
+					Double remorsePotential = (Double)EmotionFunctions.calcRemorsePotential(emoFactor, Math.abs(praiseworthiness), Math.abs(desireSelf), 
+							expDiff, cogUnit, agentGlobalVars, eventGlobalVars);
+					Double remorseIntensity = (remorsePotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
+					
+					// Update the observed emotions
+					ObservedEmotions obsEmos = new ObservedEmotions();
+					obsEmos.setIterNo(currIter);
+					obsEmos.setAgentId(agentID);
+					obsEmos.setTargetEvent(eventID);
+					obsEmos.setTargetNeighbour(agentNeighbour);
+					obsEmos.setTargetObj(-1l);
+					obsEmos.setEmotion(emoToBeInvoked);
+					obsEmos.setEmoPot(remorsePotential);
+					obsEmos.setEmoIntensity(remorseIntensity);
+					obsEmos.setUserId(constVars.getUserId());
+					obsEmos.setSimId(constVars.getSimId());
+					ObservedEmotionsDAO obsEmosDAO = context
+							.getBean(ObservedEmotionsDAO.class);
+					obsEmosDAO.saveAndFlush(obsEmos);
+				}
+				
+				
+				// Invoked the gratification/remorse emotion above
+				
+			}
+					
+		}	
+	}
+	
+	
+	private void invokeObjectEmos(String emoToBeInvoked)
+	{
+		Double emoFactor = (Double)emoAttitudes.get(emoToBeInvoked).get("emotion_factor");
+		
+		ObjectTabDAO objectDAO = context.getBean(ObjectTabDAO.class);
+		ObjectTab object = objectDAO.getObjectByIterObjectIdAgentUserAndSimId(
+				currIter, objectID, agentID, constVars.getUserId(), constVars.getSimId());
+		
+		Double oSenseOfReality = 0.0;
+		Double oPsychoProximity = 0.0;
+		Double oUnexpectedness = 0.0;
+		Double oArousal = 0.0;
+		
+		
+			familiarity = object.getObjFamiliarity();
+			appealingness = object.getObjAppealingness();
+			
+			// Get components of object global variables
+			
+			oSenseOfReality = object.getObjSenseOfReality();
+			oPsychoProximity = object.getObjPsychoProximity();
+			oUnexpectedness = object.getObjUnexpectedness();
+			oArousal = object.getObjArousal();
+			
+			objectGlobalVars = ((oSenseOfReality + oPsychoProximity + oUnexpectedness + oArousal)+4)/8.0;
+			
+			// Invoke liking/disliking emotion below
+			
+			if(emoToBeInvoked.equalsIgnoreCase("liking")
+					&& (appealingness > 0))
+			{
+				Double likingPotential = (Double)EmotionFunctions.calcLikingPotential(emoFactor, Math.abs(appealingness), familiarity, objectGlobalVars);
+				Double likingIntensity = (likingPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
+				
+				// Update the observed emotions
+				ObservedEmotions obsEmos = new ObservedEmotions();
+				obsEmos.setIterNo(currIter);
+				obsEmos.setAgentId(agentID);
+				obsEmos.setTargetEvent(-1l);
+				obsEmos.setTargetNeighbour(-1l);
+				obsEmos.setTargetObj(objectID);
+				obsEmos.setEmotion(emoToBeInvoked);
+				obsEmos.setEmoPot(likingPotential);
+				obsEmos.setEmoIntensity(likingIntensity);
+				obsEmos.setUserId(constVars.getUserId());
+				obsEmos.setSimId(constVars.getSimId());
+				ObservedEmotionsDAO obsEmosDAO = context
+						.getBean(ObservedEmotionsDAO.class);
+				obsEmosDAO.saveAndFlush(obsEmos);
+			}
+			else if(emoToBeInvoked.equalsIgnoreCase("disliking")
+					&& (appealingness < 0))
+			{
+				Double dislikingPotential = (Double)EmotionFunctions.calcDislikingPotential(emoFactor, Math.abs(appealingness), familiarity, objectGlobalVars);
+				Double dislikingIntensity = (dislikingPotential - (Double)emoAttitudes.get(emoToBeInvoked).get("threshold"));
+				
+				// Update the observed emotions
+				ObservedEmotions obsEmos = new ObservedEmotions();
+				obsEmos.setIterNo(currIter);
+				obsEmos.setAgentId(agentID);
+				obsEmos.setTargetEvent(-1l);
+				obsEmos.setTargetNeighbour(-1l);
+				obsEmos.setTargetObj(objectID);
+				obsEmos.setEmotion(emoToBeInvoked);
+				obsEmos.setEmoPot(dislikingPotential);
+				obsEmos.setEmoIntensity(dislikingIntensity);
+				obsEmos.setUserId(constVars.getUserId());
+				obsEmos.setSimId(constVars.getSimId());
+				ObservedEmotionsDAO obsEmosDAO = context
+						.getBean(ObservedEmotionsDAO.class);
+				obsEmosDAO.saveAndFlush(obsEmos);
+			}		
+		
+	}
+	
+	public void individualEmotionsInvocation()
+	{
+		
+		agentPerception();
+		
+		ArrayList<String> trigEmos = getTriggeredEmos();
+		
+		Iterator<String> emoIter = trigEmos.iterator();
+		
+		while(emoIter.hasNext())
+		{
+			System.out.println("Invoke Emotion: "+emoIter.next());
+		}
+		
+		collectDataAndInvoke();
+		
+		
+	}
+	
 
 }
