@@ -3,12 +3,13 @@ package com.services.dao;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.services.entities.PreviousState;
 
-public interface PreviousStateDAO extends JpaRepository<PreviousState, Long> {
+public interface PreviousStateDAO extends JpaRepository<PreviousState, Long>, JpaSpecificationExecutor<PreviousState>{
 
 	@Query("from PreviousState ps where ps.userId = :userId AND ps.simId = :simId AND ps.iterNo = :iterNo AND ps.agentId = :agentId AND ps.eventId = :eventId AND ps.emotion = :emotion")
 	public List<PreviousState> getPrevStateByIterNoAgentEventEmotionUserAndSim(
