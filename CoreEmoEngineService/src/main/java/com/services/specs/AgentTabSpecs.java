@@ -22,7 +22,7 @@ public class AgentTabSpecs implements Specification<AgentTab>{
 	public Predicate toPredicate(Root<AgentTab> root, CriteriaQuery<?> query,
 			CriteriaBuilder cb) {
 		
-		Predicate pAnd = cb.conjunction();
+		Predicate pAnd = cb.disjunction();
 		
 		if(agent.getIsAgent() != null)
 		{

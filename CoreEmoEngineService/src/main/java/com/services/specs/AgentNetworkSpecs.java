@@ -22,9 +22,9 @@ public class AgentNetworkSpecs implements Specification<AgentNetwork>{
 	@Override
 	public Predicate toPredicate(Root<AgentNetwork> root,
 			CriteriaQuery<?> query, CriteriaBuilder cb) {
+			
+		Predicate pAnd = cb.disjunction();
 		
-		
-		Predicate pAnd = cb.conjunction();
 	       if(agentNetwork.getEmoTarget() != null)
 	       {
 	    	   pAnd = cb.and(pAnd, root.get("emoTarget").in(agentNetwork.getEmoTarget()));

@@ -8,9 +8,11 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import javax.persistence.Column;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public class EntityReflection {
@@ -185,6 +187,34 @@ public class EntityReflection {
 		{
 			System.out.println("Not an instance of JpaRepository.");
 		}
+	}
+	
+	
+	public <T, V> List<V> getEntityBySpec(T dao, V entity, Specification<V> spec)
+	{
+		List<V> results = null;
+			try {
+				Method getMethodBySpec = dao.getClass().getMethod("findAll", spec.getClass());
+				results =  (List<V>) getMethodBySpec.invoke(dao, spec);
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return results;
+		
 	}
 	
 

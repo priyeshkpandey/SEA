@@ -38,7 +38,7 @@ public class InteractionAttitudes implements Serializable{
 	Long targetEvent;
 	
 	@Column(name="target_object")
-	Long targetAgent;
+	Long targetObject;
 	
 	@Column(name="target_emotion")
 	String targetEmotion;
@@ -126,12 +126,14 @@ public class InteractionAttitudes implements Serializable{
 		this.targetEvent = targetEvent;
 	}
 
-	public Long getTargetAgent() {
-		return targetAgent;
+	
+
+	public Long getTargetObject() {
+		return targetObject;
 	}
 
-	public void setTargetAgent(Long targetAgent) {
-		this.targetAgent = targetAgent;
+	public void setTargetObject(Long targetObject) {
+		this.targetObject = targetObject;
 	}
 
 	public String getTargetEmotion() {
