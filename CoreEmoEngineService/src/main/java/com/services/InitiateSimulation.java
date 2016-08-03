@@ -15,12 +15,16 @@ import com.services.entities.InitiateSimulationReqBody;
 import com.services.entities.Simulation;
 import com.services.psychological.core.ConstantVariables;
 import com.services.psychological.core.ExecuteSingleSimulationStep;
+import com.services.psychological.core.SingleStepComponent;
 
 @RestController
 public class InitiateSimulation extends BaseController {
 
 	@Autowired
 	ApplicationContext context;
+	
+	ConstantVariables constVars;
+	SingleStepComponent singleStep;
 
 	@RequestMapping(value = "/initiate/simultion", method = RequestMethod.POST)
 	public HttpStatus initiateSimulation(
@@ -28,7 +32,7 @@ public class InitiateSimulation extends BaseController {
 		
 		String userId = initSimReqBody.getUserId();
 		Long simId = initSimReqBody.getSimId();
-		Integer personOfInterest = initSimReqBody.getPersonOfInterest();
+		Long personOfInterest = initSimReqBody.getPersonOfInterest();
 		
 		initSimulation(userId, simId, personOfInterest);
 		
@@ -38,12 +42,12 @@ public class InitiateSimulation extends BaseController {
 
 	@Async
 	public void initSimulation(String userId, Long simId,
-			Integer personOfInterest) {
+			Long personOfInterest) {
 		SimulationDAO simDAO = context.getBean(SimulationDAO.class);
 		Simulation simToRun = simDAO.getSimulationByUserAndSimId(userId, simId);
 
-		ConstantVariables constVars = new ConstantVariables(simToRun.getUserId(),
-				simToRun.getSimId());
+		//ConstantVariables constVars = new ConstantVariables(simToRun.getUserId(),
+			//	simToRun.getSimId());
 
 		while ((simToRun.getCurrIter() <= simToRun.getWorkingIter())
 				&& (simToRun.getCurrIter() <= simToRun.getMaxIter())) {
