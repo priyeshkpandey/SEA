@@ -22,7 +22,7 @@ public class ExecuteSingleSimulationStep {
 
 	HashMap<String, HashMap<String, Object>> models = new HashMap<String, HashMap<String, Object>>();
 
-	private ConstantVariables constVars;
+	private ModelVariables constVars;
 	private Long simulationId;
 	private String userID;
 	private Integer agentId;
@@ -42,12 +42,12 @@ public class ExecuteSingleSimulationStep {
 	private int lastIndex;
 	Connection conn;
 
-	public ExecuteSingleSimulationStep(Long iter, int agent,
-			Integer thrdPerson, ConstantVariables constVars) {
+	public ExecuteSingleSimulationStep(Long currIter, Integer agent,
+			Integer thirdPerson, ModelVariables constVars) {
 		simulationId = constVars.getSimId();
 		agentId = agent;
-		currIter = iter;
-		thirdPerson = thrdPerson;
+		this.currIter = currIter;
+		this.thirdPerson = thirdPerson;
 		this.userID = constVars.getUserId();
 		this.constVars = constVars;
 	}

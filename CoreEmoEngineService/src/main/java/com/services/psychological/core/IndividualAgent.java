@@ -56,13 +56,13 @@ public class IndividualAgent {
 	private HashMap<String, Integer> triggeredEmosPrecedence = new HashMap<String, Integer>();
 	private HashMap<String, HashMap<String, Object>> emoAttitudes = new HashMap<String, HashMap<String, Object>>();
 	
-	private ConstantVariables constVars;
+	private ModelVariables constVars;
 	
 	@Autowired
 	@Qualifier("psycheConfig")
 	private Properties psycheConfig;
 	
-	IndividualAgent(Long simId, int agentId, int eventId, int objId, ConstantVariables constVars)
+	IndividualAgent(Long simId, int agentId, int eventId, int objId, ModelVariables constVars)
 	{
 		agentID = agentId;
 		eventID = eventId;

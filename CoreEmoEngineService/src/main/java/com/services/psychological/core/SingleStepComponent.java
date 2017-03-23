@@ -54,7 +54,7 @@ public class SingleStepComponent {
 
 	HashMap<String, HashMap<String, Object>> models = new HashMap<String, HashMap<String, Object>>();
 
-	private ConstantVariables constVars;
+	private ModelVariables constVars;
 	private Long simulationId;
 	private String userID;
 	private Long agentId;
@@ -95,7 +95,7 @@ public class SingleStepComponent {
 	private ObjectTabDAO objectDAO;
 
 	public SingleStepComponent(Long iter, Long agent, Long thrdPerson,
-			ConstantVariables constVars) {
+			ModelVariables constVars) {
 		simulationId = constVars.getSimId();
 		agentId = agent;
 		currIter = iter;

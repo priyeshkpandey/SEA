@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ConstantVariables {
+public class ModelVariables {
 
 	private String dbURL;
 	private String dbName;
@@ -23,7 +23,7 @@ public class ConstantVariables {
 	private  String dbConnectString;
 	private  String dbDriver;
 	
-	public ConstantVariables(String userID, Long simulationId)
+	public ModelVariables(String userID, Long simulationId)
 	{
 		this.userID = userID;
 		this.simulationId = simulationId;

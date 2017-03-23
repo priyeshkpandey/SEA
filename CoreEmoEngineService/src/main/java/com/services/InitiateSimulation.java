@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.services.dao.SimulationDAO;
 import com.services.entities.InitiateSimulationReqBody;
 import com.services.entities.Simulation;
-import com.services.psychological.core.ConstantVariables;
+import com.services.psychological.core.ModelVariables;
 import com.services.psychological.core.ExecuteSingleSimulationStep;
 import com.services.psychological.core.SingleStepComponent;
 
@@ -23,7 +23,7 @@ public class InitiateSimulation extends BaseController {
 	@Autowired
 	ApplicationContext context;
 	
-	ConstantVariables constVars;
+	ModelVariables constVars;
 	SingleStepComponent singleStep;
 
 	@RequestMapping(value = "/initiate/simultion", method = RequestMethod.POST)
@@ -32,7 +32,7 @@ public class InitiateSimulation extends BaseController {
 		
 		String userId = initSimReqBody.getUserId();
 		Long simId = initSimReqBody.getSimId();
-		Long personOfInterest = initSimReqBody.getPersonOfInterest();
+		Integer personOfInterest = initSimReqBody.getPersonOfInterest();
 		
 		initSimulation(userId, simId, personOfInterest);
 		
@@ -42,7 +42,7 @@ public class InitiateSimulation extends BaseController {
 
 	@Async
 	public void initSimulation(String userId, Long simId,
-			Long personOfInterest) {
+			Integer personOfInterest) {
 		SimulationDAO simDAO = context.getBean(SimulationDAO.class);
 		Simulation simToRun = simDAO.getSimulationByUserAndSimId(userId, simId);
 

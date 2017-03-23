@@ -5,7 +5,7 @@ public class InitiateSimulationReqBody {
 	
 	String userId;
 	Long simId;
-	Long personOfInterest;
+	Integer personOfInterest;
 	public String getUserId() {
 		return userId;
 	}
@@ -18,10 +18,10 @@ public class InitiateSimulationReqBody {
 	public void setSimId(Long simId) {
 		this.simId = simId;
 	}
-	public Long getPersonOfInterest() {
+	public Integer getPersonOfInterest() {
 		return personOfInterest;
 	}
-	public void setPersonOfInterest(Long personOfInterest) {
+	public void setPersonOfInterest(Integer personOfInterest) {
 		this.personOfInterest = personOfInterest;
 	}
 	
