@@ -110,19 +110,74 @@ public class IndividualAgentComponent {
 	@Autowired
 	ApplicationContext context;
 
-	public IndividualAgentComponent(Long agentId, Long eventId,
-			Long objId, ModelVariables modelVars) {
-		agentID = agentId;
-		eventID = eventId;
-		objectID = objId;
-		simulationId = modelVars.getSimId();
+	public IndividualAgentComponent() {
 		isAgent = false;
 		isEvent = false;
 		isObject = false;
-		this.constVars = modelVars;
-
 	}
 	
+	
+	
+	public Long getAgentID() {
+		return agentID;
+	}
+
+
+
+	public void setAgentID(Long agentID) {
+		this.agentID = agentID;
+	}
+
+
+
+	public Long getEventID() {
+		return eventID;
+	}
+
+
+
+	public void setEventID(Long eventID) {
+		this.eventID = eventID;
+	}
+
+
+
+	public Long getObjectID() {
+		return objectID;
+	}
+
+
+
+	public void setObjectID(Long objectID) {
+		this.objectID = objectID;
+	}
+
+
+
+	public Long getSimulationId() {
+		return simulationId;
+	}
+
+
+
+	public void setSimulationId(Long simulationId) {
+		this.simulationId = simulationId;
+	}
+
+
+
+	public ModelVariables getConstVars() {
+		return constVars;
+	}
+
+
+
+	public void setConstVars(ModelVariables constVars) {
+		this.constVars = constVars;
+	}
+
+
+
 	public void agentPerception() {
 		initializeSimulation();
 		setCurrIter();

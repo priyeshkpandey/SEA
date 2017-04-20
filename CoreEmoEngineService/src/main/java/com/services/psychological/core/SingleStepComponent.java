@@ -49,6 +49,10 @@ import com.services.specs.EventTabSpecs;
 import com.services.specs.InteractionAttitudesSpecs;
 import com.services.specs.ObjectTabSpecs;
 
+/**
+ * @author priyeshpandey
+ *
+ */
 @Component
 public class SingleStepComponent {
 
@@ -75,6 +79,8 @@ public class SingleStepComponent {
 
 	@Autowired
 	ApplicationContext context;
+	@Autowired
+	IndividualAgentComponent individualAgent;
 
 	// Entities
 
@@ -94,17 +100,85 @@ public class SingleStepComponent {
 	private InteractionAttitudesDAO interactAttsDAO;
 	private ObjectTabDAO objectDAO;
 
-	public SingleStepComponent(Long iter, Long agent, Long thrdPerson,
-			ModelVariables constVars) {
-		simulationId = constVars.getSimId();
-		agentId = agent;
-		currIter = iter;
-		thirdPerson = thrdPerson;
-		this.userID = constVars.getUserId();
+	public SingleStepComponent() {
+
+	}
+
+	
+	
+	public ModelVariables getConstVars() {
+		return constVars;
+	}
+
+
+
+	public void setConstVars(ModelVariables constVars) {
 		this.constVars = constVars;
 	}
 
-	public void initModels() {
+
+
+	public Long getSimulationId() {
+		return simulationId;
+	}
+
+
+
+	public void setSimulationId(Long simulationId) {
+		this.simulationId = simulationId;
+	}
+
+
+
+	public String getUserID() {
+		return userID;
+	}
+
+
+
+	public void setUserID(String userID) {
+		this.userID = userID;
+	}
+
+
+
+	public Long getAgentId() {
+		return agentId;
+	}
+
+
+
+	public void setAgentId(Long agentId) {
+		this.agentId = agentId;
+	}
+
+
+
+	public Long getCurrIter() {
+		return currIter;
+	}
+
+
+
+	public void setCurrIter(Long currIter) {
+		this.currIter = currIter;
+	}
+
+
+
+	public Long getThirdPerson() {
+		return thirdPerson;
+	}
+
+
+
+	public void setThirdPerson(Long thirdPerson) {
+		this.thirdPerson = thirdPerson;
+	}
+
+
+
+	public void initModelsAndExecuteSingleStep() {
 
 		ResourceModelDAO modelDAO = context.getBean(ResourceModelDAO.class);
 		List<ResourceModel> modelsList = modelDAO.getNoIteractModelsBySimUserIdAgentId(
@@ -207,6 +281,13 @@ public class SingleStepComponent {
 
 					//IndividualAgentComponent individualAgent = new IndividualAgentComponent(simulationId, agentId, targetEvent,
 						//	targetObject, constVars).individualEmotionsInvocation();
+		individualAgent.setAgentID(agentId);
+		individualAgent.setConstVars(constVars);
+		individualAgent.setEventID(targetEvent);
+		individualAgent.setObjectID(targetObject);
+		individualAgent.setSimulationId(simulationId);
+		
+		individualAgent.individualEmotionsInvocation();
 
 		// ***** Start interactions and set table values *****
 

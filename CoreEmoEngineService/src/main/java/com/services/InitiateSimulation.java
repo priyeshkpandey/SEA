@@ -23,7 +23,9 @@ public class InitiateSimulation extends BaseController {
 	@Autowired
 	ApplicationContext context;
 	
+	@Autowired
 	ModelVariables constVars;
+	@Autowired
 	SingleStepComponent singleStep;
 
 	@RequestMapping(value = "/initiate/simultion", method = RequestMethod.POST)
@@ -32,7 +34,7 @@ public class InitiateSimulation extends BaseController {
 		
 		String userId = initSimReqBody.getUserId();
 		Long simId = initSimReqBody.getSimId();
-		Integer personOfInterest = initSimReqBody.getPersonOfInterest();
+		Long personOfInterest = initSimReqBody.getPersonOfInterest();
 		
 		initSimulation(userId, simId, personOfInterest);
 		
@@ -42,22 +44,27 @@ public class InitiateSimulation extends BaseController {
 
 	@Async
 	public void initSimulation(String userId, Long simId,
-			Integer personOfInterest) {
+			Long personOfInterest) {
 		SimulationDAO simDAO = context.getBean(SimulationDAO.class);
 		Simulation simToRun = simDAO.getSimulationByUserAndSimId(userId, simId);
 
-		//ConstantVariables constVars = new ConstantVariables(simToRun.getUserId(),
-			//	simToRun.getSimId());
+		constVars.setUserID(userId);
+		constVars.setSimulationId(simId);
 
 		while ((simToRun.getCurrIter() <= simToRun.getWorkingIter())
 				&& (simToRun.getCurrIter() <= simToRun.getMaxIter())) {
 
 			Long noOfAgents = simToRun.getNoOfAgents();
 
-			for (int agentId = 1; agentId <= noOfAgents; agentId++) {
-
-				new ExecuteSingleSimulationStep(simToRun.getCurrIter(),
-						agentId, personOfInterest, constVars).initModels();
+			for (long agentId = 1; agentId <= noOfAgents; agentId++) {
+				singleStep.setAgentId(agentId);
+				singleStep.setConstVars(constVars);
+				singleStep.setCurrIter(simToRun.getCurrIter());
+				singleStep.setSimulationId(simId);
+				singleStep.setThirdPerson(personOfInterest);
+				singleStep.setUserID(userId);
+				
+				singleStep.initModelsAndExecuteSingleStep();
 			}
 
 			simToRun = simDAO.getSimulationByUserAndSimId(userId, simId);

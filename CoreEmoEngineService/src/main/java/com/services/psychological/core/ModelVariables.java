@@ -23,10 +23,8 @@ public class ModelVariables {
 	private  String dbConnectString;
 	private  String dbDriver;
 	
-	public ModelVariables(String userID, Long simulationId)
+	public ModelVariables()
 	{
-		this.userID = userID;
-		this.simulationId = simulationId;
 		dbURL = psycheConfig.getProperty("database_url");
 		dbName = psycheConfig.getProperty("database_name");
 		dbUserName = psycheConfig.getProperty("db_user_name");
@@ -35,6 +33,32 @@ public class ModelVariables {
 		dbDriver = psycheConfig.getProperty("db_driver");
 	}
 	
+	
+	
+	public String getUserID() {
+		return userID;
+	}
+
+
+
+	public void setUserID(String userID) {
+		this.userID = userID;
+	}
+
+
+
+	public Long getSimulationId() {
+		return simulationId;
+	}
+
+
+
+	public void setSimulationId(Long simulationId) {
+		this.simulationId = simulationId;
+	}
+
+
+
 	public String getDBConnection(){return dbConnectString;}
 	public String getDBUserName(){return dbUserName;}
 	public String getDBPassword(){return dbPassword;}
