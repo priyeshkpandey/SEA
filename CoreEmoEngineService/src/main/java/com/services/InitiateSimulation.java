@@ -83,7 +83,14 @@ public class InitiateSimulation extends BaseController {
 		SimulationDAO simDAO = context.getBean(SimulationDAO.class);
 		Simulation sim = simDAO.getSimulationByUserAndSimId(userId, simId);
 		
-		return sim.getIsDone();
+		Boolean isSimulationFinished = sim.getIsDone();
+		
+		if(isSimulationFinished) {
+			sim.setIsDone(false);
+			simDAO.saveAndFlush(sim);
+		}
+		
+		return isSimulationFinished;
 		
 	}
 	
