@@ -1,281 +1,344 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.services</groupId>
-  <artifactId>CoreEmoEngineService</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>war</packaging>
-  
-  <build>
-    <sourceDirectory>src</sourceDirectory>
-    <plugins>
-      <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.10</version>
-        
-         <executions>
-          <execution>
-            <id>copy-dependencies</id>
-            <phase>package</phase>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>/Users/priyeshpandey/Downloads/output</outputDirectory>
-              <overWriteReleases>false</overWriteReleases>
-              <overWriteSnapshots>false</overWriteSnapshots>
-              <overWriteIfNewer>true</overWriteIfNewer>
-            </configuration>
-          </execution>
-        </executions>
-        
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-        
-      </plugin>
-      
-      <plugin>            
-  <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>maven-war-plugin</artifactId>
-  <configuration>
-    <webXml>src\main\webapp\WEB-INF\web.xml</webXml>        
-  </configuration>
-	</plugin>
-	
-	<plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-                 
-            </plugin>
-      
-    </plugins>
-  </build>
-  
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-  
-  
-  <dependencies>
-  
-  
-  <dependency>
-	<groupId>org.slf4j</groupId>
-	<artifactId>slf4j-api</artifactId>
-	<version>1.7.12</version>
-	</dependency>
-
-	<dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-simple</artifactId>
-        <version>1.7.12</version>
-    </dependency>
-    
-    <dependency>
-	<groupId>org.springframework</groupId>
-	<artifactId>spring-core</artifactId>
-	<version>4.2.0.RELEASE</version>
-	</dependency>
-	
-	<dependency>
-	<groupId>org.springframework</groupId>
-	<artifactId>spring-beans</artifactId>
-	<version>4.2.0.RELEASE</version>
-	</dependency>
-	
-	<dependency>
-	<groupId>org.springframework</groupId>
-	<artifactId>spring-context</artifactId>
-	<version>4.2.0.RELEASE</version>
-	</dependency>
-	
-	<dependency>
-	<groupId>org.springframework</groupId>
-	<artifactId>spring-web</artifactId>
-	<version>4.2.0.RELEASE</version>
-	</dependency>
-	
-	<dependency>
-	<groupId>org.springframework.data</groupId>
-	<artifactId>spring-data-jpa</artifactId>
-	<version>1.8.2.RELEASE</version>
-	</dependency>
-	
-	<dependency>
-	<groupId>javax.persistence</groupId>
-	<artifactId>persistence-api</artifactId>
-	<version>1.0.2</version>
-	</dependency>
-	
-	<dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>5.0.0.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <version>5.0.0.Final</version>
-        </dependency>
-	
-	
-	<dependency>
-	<groupId>mysql</groupId>
-	<artifactId>mysql-connector-java</artifactId>
-	<version>5.1.35</version>
-	</dependency>
-	
-	<dependency>
-	<groupId>org.apache.poi</groupId>
-	<artifactId>poi</artifactId>
-	<version>3.12-beta1</version>
-	</dependency>
-	
-	<dependency>
-	<groupId>org.apache.poi</groupId>
-	<artifactId>poi-ooxml</artifactId>
-	<version>3.9</version>
-	</dependency>
-	
-	<dependency>
-	<groupId>commons-dbcp</groupId>
-	<artifactId>commons-dbcp</artifactId>
-	<version>1.4</version>
-	</dependency>
-	
-	<dependency>
-	<groupId>org.hibernate</groupId>
-	<artifactId>hibernate-ehcache</artifactId>
-	<version>5.0.0.Final</version>
-	</dependency>
-	
-  
-  <dependency>
-	<groupId>org.springframework</groupId>
-	<artifactId>spring-webmvc</artifactId>
-	<version>4.2.0.RELEASE</version>
-	</dependency>
-  
-  <dependency>
-	<groupId>com.fasterxml.jackson.core</groupId>
-	<artifactId>jackson-core</artifactId>
-	<version>2.6.1</version>
-	</dependency>
-  
-  <dependency>
-	<groupId>com.fasterxml.jackson.core</groupId>
-	<artifactId>jackson-databind</artifactId>
-	<version>2.6.1</version>
-	</dependency>
-  
-  <dependency>
-  <groupId>org.apache.opennlp</groupId>
-  <artifactId>opennlp-tools</artifactId>
-  <version>1.6.0</version>
-</dependency>
-
-<dependency>
-  <groupId>org.apache.opennlp</groupId>
-  <artifactId>opennlp-uima</artifactId>
-  <version>1.6.0</version>
-</dependency>
-  
- 
-    
-    <dependency>
-        <groupId>org.springframework.social</groupId>
-        <artifactId>spring-social-facebook</artifactId>
-        <version>2.0.3.RELEASE</version>
-    </dependency>
-  
-  
-  <dependency>
-	<groupId>org.springframework.security</groupId>
-	<artifactId>spring-security-core</artifactId>
-	<version>4.0.3.RELEASE</version>
-</dependency>
-  
-  
-  <dependency>
-	<groupId>org.springframework.security</groupId>
-	<artifactId>spring-security-web</artifactId>
-	<version>4.0.3.RELEASE</version>
-</dependency>
-  
-  
-  <dependency>
-	<groupId>org.springframework.security</groupId>
-	<artifactId>spring-security-config</artifactId>
-	<version>4.0.3.RELEASE</version>
-</dependency>
-  
-  
-  <dependency>
-	<groupId>org.springframework.security</groupId>
-	<artifactId>spring-security-taglibs</artifactId>
-	<version>4.0.3.RELEASE</version>
-</dependency>
-  
-  
-  <dependency>
-  <groupId>org.apache.httpcomponents</groupId>
-  <artifactId>httpclient</artifactId>
-  <version>4.5.1</version>
-</dependency>
-
-<dependency>
-	<groupId>org.springframework.social</groupId>
-	<artifactId>spring-social-core</artifactId>
-	<version>1.1.4.RELEASE</version>
-</dependency>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.services</groupId>
+	<artifactId>CoreEmoEngineService</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
 
 
-<dependency>
-	<groupId>org.springframework.social</groupId>
-	<artifactId>spring-social-config</artifactId>
-	<version>1.1.4.RELEASE</version>
-</dependency>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<mvn.tomcat.plugin.version>2.2</mvn.tomcat.plugin.version>
+		<version.mvn.war.plugin>3.1.0</version.mvn.war.plugin>
+	</properties>
+
+	<build>
+		<finalName>CoreEmoEngineService</finalName>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>resources</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.10</version>
+
+				<executions>
+					<execution>
+						<configuration>
+							<outputDirectory>target</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+						</configuration>
+					</execution>
+				</executions>
+
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>${version.mvn.war.plugin}</version>
+				<configuration>
+					<warSourceDirectory>src/main/webapp</warSourceDirectory>
+					<webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<webResources>
+						<resource>
+							<directory>src/main/resources</directory>
+							<targetPath>WEB-INF/classes</targetPath>
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat8-maven-plugin</artifactId>
+				<version>${mvn.tomcat.plugin.version}</version>
+				<configuration>
+					<url>http://localhost:8080/manager/text</url>
+					<server>Tomcat8Server</server>
+					<path>/CoreEmoEngineService</path>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<repositories>
+
+		<repository>
+			<id>java.net-Public</id>
+			<name>Maven Java Net Snapshots and Releases</name>
+			<url>https://maven.java.net/content/groups/public/</url>
+			<layout>default</layout>
+		</repository>
+
+		<repository>
+			<id>Central</id>
+			<name>Maven Repository</name>
+			<url>http://repo1.maven.org/maven2</url>
+			<layout>default</layout>
+		</repository>
+
+		<repository>
+			<id>central</id>
+			<name>Central Repository</name>
+			<url>http://repo.maven.apache.org/maven2</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>apache.snapshots</id>
+			<name>Apache Development Snapshot Repository</name>
+			<url>https://repository.apache.org/content/repositories/snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+
+	</repositories>
+
+	<dependencies>
 
 
-<dependency>
-	<groupId>org.springframework.social</groupId>
-	<artifactId>spring-social-web</artifactId>
-	<version>1.1.4.RELEASE</version>
-</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.12</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.12</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>4.2.0.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>4.2.0.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>4.2.0.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>4.2.0.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>1.8.2.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>persistence-api</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>5.0.0.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>5.0.0.Final</version>
+		</dependency>
 
 
-<dependency>
-	<groupId>org.springframework.social</groupId>
-	<artifactId>spring-social-security</artifactId>
-	<version>1.1.4.RELEASE</version>
-</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.35</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.12-beta1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.9</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-ehcache</artifactId>
+			<version>5.0.0.Final</version>
+		</dependency>
 
 
-<!-- querydsl -->
-    <dependency>
-        <groupId>com.mysema.querydsl</groupId>
-        <artifactId>querydsl-core</artifactId>
-        <version>3.7.3</version>
-    </dependency>
-    <dependency>
-        <groupId>com.mysema.querydsl</groupId>
-        <artifactId>querydsl-apt</artifactId>
-        <version>3.7.3</version>
-    </dependency>
-    <dependency>
-        <groupId>com.mysema.querydsl</groupId>
-        <artifactId>querydsl-jpa</artifactId>
-        <version>3.7.3</version>
-    </dependency>
-  
-  </dependencies>
-  
-  
-  
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>4.2.0.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.6.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.6.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.opennlp</groupId>
+			<artifactId>opennlp-tools</artifactId>
+			<version>1.6.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.opennlp</groupId>
+			<artifactId>opennlp-uima</artifactId>
+			<version>1.6.0</version>
+		</dependency>
+
+
+
+		<dependency>
+			<groupId>org.springframework.social</groupId>
+			<artifactId>spring-social-facebook</artifactId>
+			<version>2.0.3.RELEASE</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>4.0.3.RELEASE</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>4.0.3.RELEASE</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>4.0.3.RELEASE</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>4.0.3.RELEASE</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.social</groupId>
+			<artifactId>spring-social-core</artifactId>
+			<version>1.1.4.RELEASE</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework.social</groupId>
+			<artifactId>spring-social-config</artifactId>
+			<version>1.1.4.RELEASE</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework.social</groupId>
+			<artifactId>spring-social-web</artifactId>
+			<version>1.1.4.RELEASE</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework.social</groupId>
+			<artifactId>spring-social-security</artifactId>
+			<version>1.1.4.RELEASE</version>
+		</dependency>
+
+
+		<!-- querydsl -->
+		<dependency>
+			<groupId>com.mysema.querydsl</groupId>
+			<artifactId>querydsl-core</artifactId>
+			<version>3.7.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mysema.querydsl</groupId>
+			<artifactId>querydsl-apt</artifactId>
+			<version>3.7.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.mysema.querydsl</groupId>
+			<artifactId>querydsl-jpa</artifactId>
+			<version>3.7.3</version>
+		</dependency>
+
+	</dependencies>
+
+
+
 </project>

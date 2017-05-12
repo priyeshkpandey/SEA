@@ -14,7 +14,6 @@ import com.services.dao.SimulationDAO;
 import com.services.entities.InitiateSimulationReqBody;
 import com.services.entities.Simulation;
 import com.services.psychological.core.ModelVariables;
-import com.services.psychological.core.ExecuteSingleSimulationStep;
 import com.services.psychological.core.SingleStepComponent;
 
 @RestController

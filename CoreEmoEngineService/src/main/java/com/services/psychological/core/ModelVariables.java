@@ -1,36 +1,16 @@
 package com.services.psychological.core;
 
-import java.util.Properties;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ModelVariables {
 
-	private String dbURL;
-	private String dbName;
-	private String dbUserName;
-	private String dbPassword;
 	private String userID;
 	private Long simulationId;
 	
-	@Autowired
-	@Qualifier("psycheConfig")
-	private Properties psycheConfig;
-	
-	private  String dbConnectString;
-	private  String dbDriver;
-	
 	public ModelVariables()
 	{
-		dbURL = psycheConfig.getProperty("database_url");
-		dbName = psycheConfig.getProperty("database_name");
-		dbUserName = psycheConfig.getProperty("db_user_name");
-		dbPassword = psycheConfig.getProperty("db_user_password");
-		dbConnectString = dbURL + dbName;
-		dbDriver = psycheConfig.getProperty("db_driver");
+
 	}
 	
 	
@@ -57,12 +37,7 @@ public class ModelVariables {
 		this.simulationId = simulationId;
 	}
 
-
-
-	public String getDBConnection(){return dbConnectString;}
-	public String getDBUserName(){return dbUserName;}
-	public String getDBPassword(){return dbPassword;}
-	public String getDBDriver(){return dbDriver;}
+	
 	public String getUserId(){return userID;}
 	public Long getSimId(){return simulationId;}
 
