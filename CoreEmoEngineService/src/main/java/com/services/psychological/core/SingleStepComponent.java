@@ -198,7 +198,7 @@ public class SingleStepComponent {
 			String keyVal = model.getVarToModel() + ","
 					+ model.getTargetAgent() + "," + model.getTargetEvent()
 					+ "," + model.getTargetObject() + ","
-					+ model.getTargetEmotion() + "," + model.getTargetEmotion()
+					+ model.getTargetEmotion() + "," + model.getTargetVariable()
 					+ "," + model.getIsInteraction() + ","
 					+ model.getSourceAgent();
 
