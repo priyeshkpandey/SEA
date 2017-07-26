@@ -187,6 +187,8 @@ public class SingleStepComponent {
 		if (!models.isEmpty()) {
 			models.clear();
 		}
+		
+		System.out.println("Model List size: " + modelsList.size());
 
 		ArrayList<String> varsToModel = new ArrayList<String>();
 

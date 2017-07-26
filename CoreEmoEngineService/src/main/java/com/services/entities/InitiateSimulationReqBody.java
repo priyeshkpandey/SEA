@@ -1,11 +1,15 @@
 package com.services.entities;
 
+import java.util.List;
+
 public class InitiateSimulationReqBody {
 	
 	
 	String userId;
 	Long simId;
 	Long personOfInterest;
+	List<Long> agents;
+	
 	public String getUserId() {
 		return userId;
 	}
@@ -24,6 +28,11 @@ public class InitiateSimulationReqBody {
 	public void setPersonOfInterest(Long personOfInterest) {
 		this.personOfInterest = personOfInterest;
 	}
-	
+	public List<Long> getAgents() {
+		return agents;
+	}
+	public void setAgents(List<Long> agents) {
+		this.agents = agents;
+	}
 
 }

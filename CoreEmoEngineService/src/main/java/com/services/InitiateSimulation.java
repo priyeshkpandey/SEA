@@ -1,5 +1,7 @@
 package com.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
@@ -34,8 +36,9 @@ public class InitiateSimulation extends BaseController {
 		String userId = initSimReqBody.getUserId();
 		Long simId = initSimReqBody.getSimId();
 		Long personOfInterest = initSimReqBody.getPersonOfInterest();
+		List<Long> agents = initSimReqBody.getAgents();
 		
-		initSimulation(userId, simId, personOfInterest);
+		initSimulation(userId, simId, personOfInterest, agents);
 		
 		return HttpStatus.ACCEPTED;
 
@@ -43,7 +46,7 @@ public class InitiateSimulation extends BaseController {
 
 	@Async
 	public void initSimulation(String userId, Long simId,
-			Long personOfInterest) {
+			Long personOfInterest, List<Long> agents) {
 		SimulationDAO simDAO = context.getBean(SimulationDAO.class);
 		Simulation simToRun = simDAO.getSimulationByUserAndSimId(userId, simId);
 
@@ -53,9 +56,7 @@ public class InitiateSimulation extends BaseController {
 		while ((simToRun.getCurrIter() <= simToRun.getWorkingIter())
 				&& (simToRun.getCurrIter() <= simToRun.getMaxIter())) {
 
-			Long noOfAgents = simToRun.getNoOfAgents();
-
-			for (long agentId = 1; agentId <= noOfAgents; agentId++) {
+			for (Long agentId : agents) {
 				singleStep.setAgentId(agentId);
 				singleStep.setConstVars(constVars);
 				singleStep.setCurrIter(simToRun.getCurrIter());
