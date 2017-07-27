@@ -216,23 +216,22 @@ public class SingleStepComponent {
 
 		Iterator<String> iterVars = varsToModel.iterator();
 		String varName = null;
-		StringBuffer vars = new StringBuffer("");
-
-		while (iterVars.hasNext()) {
-			String var = iterVars.next();
-			vars.append(var + ",");
-		}
-
-		lastIndex = vars.length();
-		vars.delete(lastIndex - 1, lastIndex);
 
 		VariableMappingDAO varMapDAO = context
 				.getBean(VariableMappingDAO.class);
-		List<VariableMapping> varMappings = varMapDAO
-				.getMappingsForVariables(vars.toString());
+		List<VariableMapping> varMappings = new ArrayList<VariableMapping>();
+		
+		while (iterVars.hasNext()) {
+			String var = iterVars.next();
+			varMappings.add(varMapDAO.getMappingByVariableId(var));
+		}
+
+		
+		System.out.println("Size of variable mappings --> " + varMappings.size()); 
 
 		for (VariableMapping varMap : varMappings) {
 			varName = varMap.getVariableId();
+			System.out.println("Variable in table --> !" + varName + "|");
 
 			ArrayList<String> tmpTableMetaData = new ArrayList<String>();
 
@@ -302,12 +301,14 @@ public class SingleStepComponent {
 			IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException {
 		String var = keyVal.split(",")[0];
-		targetAgent = keyVal.split(",")[1] != null &&  !keyVal.split(",")[1].equals("") ? Long.parseLong(keyVal.split(",")[1]) : -1;
-		targetEvent = keyVal.split(",")[2] != null && !keyVal.split(",")[2].equals("") ? Long.parseLong(keyVal.split(",")[2]) : -1;
-		targetObject = keyVal.split(",")[3] != null && !keyVal.split(",")[3].equals("") ? Long.parseLong(keyVal.split(",")[3]) : -1;
+		System.out.println("Variable --> |" + var + "|"); 
+		System.out.println("Value of targetAgent --> " + keyVal.split(",")[1]); 
+		targetAgent = keyVal.split(",")[1] != null &&  !keyVal.split(",")[1].equals("null") ? Long.parseLong(keyVal.split(",")[1]) : -1;
+		targetEvent = keyVal.split(",")[2] != null && !keyVal.split(",")[2].equals("null") ? Long.parseLong(keyVal.split(",")[2]) : -1;
+		targetObject = keyVal.split(",")[3] != null && !keyVal.split(",")[3].equals("null") ? Long.parseLong(keyVal.split(",")[3]) : -1;
 		targetEmotion = keyVal.split(",")[4];
 		targetVariable = keyVal.split(",")[5];
-		sourceAgent = keyVal.split(",")[7] != null && !keyVal.split(",")[7].equals("") ? Long.parseLong(keyVal.split(",")[7]) : -1;
+		sourceAgent = keyVal.split(",")[7] != null && !keyVal.split(",")[7].equals("null") ? Long.parseLong(keyVal.split(",")[7]) : -1;
 
 		if (!keyRowInserted.contains(keyVal)) {
 			String tableName = varsToTableMetaData.get(var).get(0);

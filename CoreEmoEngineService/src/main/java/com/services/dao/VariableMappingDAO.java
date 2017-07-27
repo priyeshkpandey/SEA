@@ -14,7 +14,7 @@ public interface VariableMappingDAO extends JpaRepository<VariableMapping, Long>
 	@Query("from VariableMapping vm where vm.variableId = :variableId")
 	public VariableMapping getMappingByVariableId(@Param("variableId") String variableId);
 	
-	@Query("from VariableMapping vm where vm.variableId IN (:vars)")
+	@Query("from VariableMapping vm where vm.variableId In (:vars)")
 	public List<VariableMapping> getMappingsForVariables(@Param("vars") String vars);
 
 }
