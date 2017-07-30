@@ -66,7 +66,7 @@ public class AgentTabSpecs implements Specification<AgentTab>{
 		
 		if(agent.getaGoalValue() != null)
 		{
-			pAnd = cb.and(pAnd, root.get("AGoalValue").in(agent.getaGoalValue()));
+			pAnd = cb.and(pAnd, root.get("aGoalValue").in(agent.getaGoalValue()));
 		}
 		
 		if(agent.getId() != null)
@@ -76,7 +76,7 @@ public class AgentTabSpecs implements Specification<AgentTab>{
 		
 		if(agent.getiGoalValue() != null)
 		{
-			pAnd = cb.and(pAnd, root.get("IGoalValue").in(agent.getiGoalValue()));
+			pAnd = cb.and(pAnd, root.get("iGoalValue").in(agent.getiGoalValue()));
 		}
 		
 		if(agent.getIterNo() != null)
@@ -91,7 +91,7 @@ public class AgentTabSpecs implements Specification<AgentTab>{
 		
 		if(agent.getrGoalValue() != null)
 		{
-			pAnd = cb.and(pAnd, root.get("RGoalValue").in(agent.getrGoalValue()));
+			pAnd = cb.and(pAnd, root.get("rGoalValue").in(agent.getrGoalValue()));
 		}
 		
 		if(agent.getSimId() != null)

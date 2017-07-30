@@ -13,15 +13,15 @@ import java.util.Random;
 public class CommonModels {
 	private Random random = new Random();
 	
-	public int getRandomIntegerBetweenOneAndTen(Integer currIter)
+	public Long getRandomIntegerBetweenOneAndTen(Long currIter)
 	{
 		System.out.println("Returning int from CommonModels");
-		return (random.nextInt(10) + 1);
+		return Long.valueOf((random.nextInt(22) + 1));
 	}
 	
-	public double getValueNormalDistribution(Integer currIter) {
+	public Double getValueNormalDistribution(Long currIter) {
 		System.out.println("Returning double (normal distribution) from CommonModels");
-	    return random.nextGaussian();
+	    return Math.abs(random.nextDouble());
 	}
 
 }

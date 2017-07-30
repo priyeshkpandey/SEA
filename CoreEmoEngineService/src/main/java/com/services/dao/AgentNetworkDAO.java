@@ -17,6 +17,9 @@ public interface AgentNetworkDAO extends JpaRepository<AgentNetwork, Long>, JpaS
 			@Param("agentId1") Long agentId1,
 			@Param("eventInvolved") Long eventInvolved);
 	
-	
+    @Query("from AgentNetwork an where an.simId = :simId AND an.userId = :userId AND an.iterNo = :iterNo AND an.agentId1 = :agentId1 AND an.agentId2 = :agentId2 "
+    		+ "AND an.eventInvolved = :eventInvolved")
+	public AgentNetwork getNetworkByIterAgentsEventUserIdAndSimId(@Param("iterNo") Long iterNo, @Param("agentId1") Long agentId1, @Param("agentId2") Long agentId2,
+			@Param("eventInvolved") Long eventInvolved, @Param("userId") String userId, @Param("simId") Long simId);
 
 }

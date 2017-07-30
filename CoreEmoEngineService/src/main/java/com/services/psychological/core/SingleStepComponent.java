@@ -2,22 +2,15 @@ package com.services.psychological.core;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Map.Entry;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.domain.Specification;
@@ -75,8 +68,6 @@ public class SingleStepComponent {
 	private HashMap<String, ArrayList<String>> varsToTableMetaData = new HashMap<String, ArrayList<String>>();
 	private HashMap<String, ArrayList<Object>> interactionAttitudes = new HashMap<String, ArrayList<Object>>();
 	
-	private int lastIndex;
-
 	@Autowired
 	ApplicationContext context;
 	@Autowired
@@ -210,6 +201,9 @@ public class SingleStepComponent {
 			valueList.put("return_type", model.getReturnType());
 			valueList.put("file_path", model.getFilePath());
 			valueList.put("tab_name", model.getTabName());
+			
+			System.out.println("Size of model value list --> " + valueList.size());
+			System.out.println("List --> " + valueList.values());
 
 			models.put(keyVal, valueList);
 		}
@@ -226,12 +220,8 @@ public class SingleStepComponent {
 			varMappings.add(varMapDAO.getMappingByVariableId(var));
 		}
 
-		
-		System.out.println("Size of variable mappings --> " + varMappings.size()); 
-
 		for (VariableMapping varMap : varMappings) {
 			varName = varMap.getVariableId();
-			System.out.println("Variable in table --> !" + varName + "|");
 
 			ArrayList<String> tmpTableMetaData = new ArrayList<String>();
 
@@ -275,6 +265,12 @@ public class SingleStepComponent {
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (BeansException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		
@@ -296,13 +292,8 @@ public class SingleStepComponent {
 
 	}
 
-	private void insertTableValues(String keyVal) throws SQLException,
-			ClassNotFoundException, NoSuchMethodException, SecurityException,
-			IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException {
+	private void insertTableValues(String keyVal) throws BeansException, Exception {
 		String var = keyVal.split(",")[0];
-		System.out.println("Variable --> |" + var + "|"); 
-		System.out.println("Value of targetAgent --> " + keyVal.split(",")[1]); 
 		targetAgent = keyVal.split(",")[1] != null &&  !keyVal.split(",")[1].equals("null") ? Long.parseLong(keyVal.split(",")[1]) : -1;
 		targetEvent = keyVal.split(",")[2] != null && !keyVal.split(",")[2].equals("null") ? Long.parseLong(keyVal.split(",")[2]) : -1;
 		targetObject = keyVal.split(",")[3] != null && !keyVal.split(",")[3].equals("null") ? Long.parseLong(keyVal.split(",")[3]) : -1;
@@ -318,36 +309,56 @@ public class SingleStepComponent {
 			String[] condColsArray = condCols.split(",");
 
 			if (tableName.equals("agent_network")) {
-				agentNetwork = new AgentNetwork();
-				agentNetworkDAO = context.getBean(AgentNetworkDAO.class);
+				agentNetworkDAO = (AgentNetworkDAO)context.getBean(AgentNetworkDAO.class);
+				agentNetwork = agentNetworkDAO.getNetworkByIterAgentsEventUserIdAndSimId(currIter, sourceAgent, targetAgent, targetEvent, constVars.getUserId(), constVars.getSimId());
+				if (null == agentNetwork) {
+					agentNetwork = new AgentNetwork();
+				}
 				setEntityFieldsAndSave(agentNetwork, agentNetworkDAO,
 						condColsArray, new AgentNetworkSpecs(agentNetwork),
 						keyVal, colName);
 			} else if (tableName.equals("agent_tab")) {
-				agent = new AgentTab();
-				agentDAO = context.getBean(AgentTabDAO.class);
+				agentDAO = (AgentTabDAO)context.getBean(AgentTabDAO.class);
+				agent = agentDAO.getAgentByUserIdSimIdAgentIdAndIter(constVars.getUserID(), constVars.getSimId(), sourceAgent, currIter);
+				if (null == agent) {
+					agent = new AgentTab();	
+				}
 				setEntityFieldsAndSave(agent, agentDAO, condColsArray,
 						new AgentTabSpecs(agent), keyVal, colName);
 			} else if (tableName.equals("emo_attitudes")) {
-				emoAtts = new EmotionalAttitudes();
-				emoAttsDAO = context.getBean(EmotionalAttitudesDAO.class);
+				emoAttsDAO = (EmotionalAttitudesDAO)context.getBean(EmotionalAttitudesDAO.class);
+				emoAtts = emoAttsDAO.getEmoAttByIterAgentEmotionsUserIdAndSimId(sourceAgent, constVars.getUserID(), currIter, constVars.getSimId(), targetEmotion);
+				if (null == emoAtts) {
+					emoAtts = new EmotionalAttitudes();	
+					emoAtts.setOccurredCnt(0l);
+					emoAtts.setOccurrenceCnt(0l); 
+				}
 				setEntityFieldsAndSave(emoAtts, emoAttsDAO, condColsArray,
 						new EmotionalAttitudesSpecs(emoAtts), keyVal, colName);
 			} else if (tableName.equals("event_tab")) {
-				event = new EventTab();
-				eventDAO = context.getBean(EventTabDAO.class);
+				eventDAO = (EventTabDAO)context.getBean(EventTabDAO.class);
+				event = eventDAO.getEventsBySimIdUserIdIterEventAndAgent(constVars.getSimId(), constVars.getUserID(), currIter, targetEvent, sourceAgent);
+				if (null == event) {
+					event = new EventTab();	
+				}
 				setEntityFieldsAndSave(event, eventDAO, condColsArray,
 						new EventTabSpecs(event), keyVal, colName);
 			} else if (tableName.equals("interaction_attitudes")) {
-				interactAtts = new InteractionAttitudes();
-				interactAttsDAO = context
-						.getBean(InteractionAttitudesDAO.class);
+				interactAttsDAO = (InteractionAttitudesDAO)context.getBean(InteractionAttitudesDAO.class);
+				interactAtts = interactAttsDAO.getUniqueInteractionAttitudes(currIter, sourceAgent, targetAgent, targetVariable, thirdPerson, 
+						targetEvent, targetObject, var, constVars.getUserID(), constVars.getSimId());
+				if (null == interactAtts) {
+					interactAtts = new InteractionAttitudes();	
+				}
 				setEntityFieldsAndSave(interactAtts, interactAttsDAO,
 						condColsArray, new InteractionAttitudesSpecs(
 								interactAtts), keyVal, colName);
 			} else if (tableName.equals("object_tab")) {
-				object = new ObjectTab();
-				objectDAO = context.getBean(ObjectTabDAO.class);
+				objectDAO = (ObjectTabDAO)context.getBean(ObjectTabDAO.class);
+				object = objectDAO.getObjectByIterObjectIdAgentUserAndSimId(currIter, targetObject, sourceAgent, constVars.getUserID(), constVars.getSimId());
+				if (null == object) {
+					object = new ObjectTab();	
+				}
 				setEntityFieldsAndSave(object, objectDAO, condColsArray,
 						new ObjectTabSpecs(object), keyVal, colName);
 			}
@@ -359,9 +370,9 @@ public class SingleStepComponent {
 			String[] condColsArray, Specification<T> spec, String keyVal,
 			String column) throws ClassNotFoundException,
 			NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
+			IllegalArgumentException, InvocationTargetException, InstantiationException {
 		int noOfCondCols = condColsArray.length;
-
+		
 		EntityReflection entityReflect = new EntityReflection();
 
 		for (int i = 0; i < noOfCondCols; i++) {
@@ -419,6 +430,8 @@ public class SingleStepComponent {
 			}
 
 		}
+		
+		entityReflect.invokeSetterMethodByColumnName("simulation_id", entity, constVars.getSimId());
 
 		List<T> existingList = entityReflect.getEntityBySpec(dao, entity, spec);
 		if (existingList.isEmpty()) {
@@ -429,20 +442,22 @@ public class SingleStepComponent {
 			Object varValue = null;
 
 			String returnType = (String) models.get(keyVal).get("return_type");
+			System.out.println("Model value list in saving --> " + models.get(keyVal).values()); 
 
-			if ((Boolean) models.get(keyVal).get("is_method")) {
+			if ((Boolean) models.get(keyVal).get("is_function")) {
 				String classPath = (String) models.get(keyVal)
 						.get("class_path");
 				String methodName = (String) models.get(keyVal).get(
 						"method_name");
 
 				Class classObject = Class.forName(classPath);
-				Class[] paramTypes = new Class[1];
+				Object classInstance = classObject.newInstance();
 
-				paramTypes[0] = Integer.class;
-
-				Method mthd = classObject.getMethod(methodName, paramTypes);
-				varValue = mthd.invoke(classObject, currIter);
+				Method mthd = classObject.getMethod(methodName, Long.class);
+				System.out.println("Invoking method --> " + mthd.getName());
+				System.out.println("CurrIter type --> " + currIter.getClass() + ", CurrIter value --> " + currIter );
+			    varValue = mthd.invoke(classInstance, currIter);
+				
 
 			} else {
 				RestTemplate restTemplate = new RestTemplate();
@@ -465,7 +480,7 @@ public class SingleStepComponent {
 
 			if (returnType.equalsIgnoreCase("INT")) {
 				entityReflect.invokeSetterMethodByColumnName(column, entity,
-						(Integer) varValue);
+						(Long) varValue);
 			} else if (returnType.equalsIgnoreCase("DOUBLE")) {
 				entityReflect.invokeSetterMethodByColumnName(column, entity,
 						(Double) varValue);

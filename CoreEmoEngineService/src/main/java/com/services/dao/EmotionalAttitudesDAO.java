@@ -17,6 +17,8 @@ public interface EmotionalAttitudesDAO extends
 			@Param("agentId") Long agentId, @Param("userId") String userId,
 			@Param("iterNo") Long iterNo, @Param("simId") Long simId);
 	
-
+	@Query("from EmotionalAttitudes ea where ea.agentId = :agentId AND ea.userId = :userId AND ea.iterNo = :iterNo AND ea.simId = :simId AND ea.emotions = :emotions")
+    public EmotionalAttitudes getEmoAttByIterAgentEmotionsUserIdAndSimId(@Param("agentId") Long agentId, @Param("userId") String userId,
+			@Param("iterNo") Long iterNo, @Param("simId") Long simId, @Param("emotions") String emotions);
 
 }
