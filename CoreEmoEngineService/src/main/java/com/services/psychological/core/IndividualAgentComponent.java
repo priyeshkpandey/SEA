@@ -303,7 +303,7 @@ public class IndividualAgentComponent {
 	}
 	
 	private void updateEmosOccurrenceCount(String emotion, Long count) {
-		triggeredEmos.add(emotion);
+		addEmotionToTriggeredEmotions(emotion);
 		emoAttitudes.get(emotion).put(
 				"occurrence_count", (count));
 	}
@@ -347,7 +347,6 @@ public class IndividualAgentComponent {
 		updateOccurredCountForEmotion(emotion, emosOccur);
 
 		if (calcOccur >= emosOccur) {
-			addEmotionToTriggeredEmotions(emotion);
 			updateEmosOccurrenceCount(emotion, calcOccur - emosOccur);
 			updateTriggeredEmotionsPrecedence(emotion);
 		} else {
