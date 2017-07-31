@@ -179,8 +179,6 @@ public class SingleStepComponent {
 			models.clear();
 		}
 		
-		System.out.println("Model List size: " + modelsList.size());
-
 		ArrayList<String> varsToModel = new ArrayList<String>();
 
 		for (ResourceModel model : modelsList) {
@@ -202,9 +200,6 @@ public class SingleStepComponent {
 			valueList.put("file_path", model.getFilePath());
 			valueList.put("tab_name", model.getTabName());
 			
-			System.out.println("Size of model value list --> " + valueList.size());
-			System.out.println("List --> " + valueList.values());
-
 			models.put(keyVal, valueList);
 		}
 
@@ -442,7 +437,6 @@ public class SingleStepComponent {
 			Object varValue = null;
 
 			String returnType = (String) models.get(keyVal).get("return_type");
-			System.out.println("Model value list in saving --> " + models.get(keyVal).values()); 
 
 			if ((Boolean) models.get(keyVal).get("is_function")) {
 				String classPath = (String) models.get(keyVal)
@@ -454,8 +448,6 @@ public class SingleStepComponent {
 				Object classInstance = classObject.newInstance();
 
 				Method mthd = classObject.getMethod(methodName, Long.class);
-				System.out.println("Invoking method --> " + mthd.getName());
-				System.out.println("CurrIter type --> " + currIter.getClass() + ", CurrIter value --> " + currIter );
 			    varValue = mthd.invoke(classInstance, currIter);
 				
 
