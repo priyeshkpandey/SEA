@@ -62,7 +62,7 @@ public class AgentNetwork implements Serializable{
 	Double agentArousal;
 	
 	@Column(name="emotion_target")
-	Boolean emoTarget;
+	Long emoTarget;
 	
 	@Column(name="user_id")
 	String userId;
@@ -190,11 +190,11 @@ public class AgentNetwork implements Serializable{
 		this.agentArousal = agentArousal;
 	}
 
-	public Boolean getEmoTarget() {
+	public Long getEmoTarget() {
 		return emoTarget;
 	}
 
-	public void setEmoTarget(Boolean emoTarget) {
+	public void setEmoTarget(Long emoTarget) {
 		this.emoTarget = emoTarget;
 	}
 

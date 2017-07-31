@@ -53,6 +53,7 @@ public class InitiateSimulation extends BaseController {
 		constVars.setUserID(userId);
 		constVars.setSimulationId(simId);
 
+		Long currIter = 0l;
 		while ((simToRun.getCurrIter() <= simToRun.getWorkingIter())
 				&& (simToRun.getCurrIter() <= simToRun.getMaxIter())) {
 
@@ -68,6 +69,8 @@ public class InitiateSimulation extends BaseController {
 			}
 
 			simToRun = simDAO.getSimulationByUserAndSimId(userId, simId);
+			simToRun.setCurrIter(++currIter);
+			simDAO.saveAndFlush(simToRun);
 			
 		}
 		

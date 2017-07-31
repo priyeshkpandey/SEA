@@ -238,6 +238,17 @@ public class SingleStepComponent {
 				String keyVal = iterModels.next();
 				insertTableValues(keyVal);
 				
+				// ***** Individual Agent's Emotions *****
+
+				//IndividualAgentComponent individualAgent = new IndividualAgentComponent(simulationId, agentId, targetEvent,
+					//	targetObject, constVars).individualEmotionsInvocation();
+				individualAgent.setAgentID(agentId);
+				individualAgent.setConstVars(constVars);
+				individualAgent.setEventID(targetEvent);
+				individualAgent.setObjectID(targetObject);
+				System.out.println("AgentId --> " + agentId + ", TargetEvent --> " + targetEvent + ", TargetObject --> " + targetObject); 
+				
+				individualAgent.individualEmotionsInvocation();
 				
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -269,17 +280,7 @@ public class SingleStepComponent {
 			}
 		}
 		
-		// ***** Individual Agent's Emotions *****
-
-					//IndividualAgentComponent individualAgent = new IndividualAgentComponent(simulationId, agentId, targetEvent,
-						//	targetObject, constVars).individualEmotionsInvocation();
-		individualAgent.setAgentID(agentId);
-		individualAgent.setConstVars(constVars);
-		individualAgent.setEventID(targetEvent);
-		individualAgent.setObjectID(targetObject);
-		individualAgent.setSimulationId(simulationId);
 		
-		individualAgent.individualEmotionsInvocation();
 
 		// ***** Start interactions and set table values *****
 

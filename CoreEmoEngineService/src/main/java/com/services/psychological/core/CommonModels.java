@@ -15,12 +15,12 @@ public class CommonModels {
 	
 	public Long getRandomIntegerBetweenOneAndTen(Long currIter)
 	{
-		System.out.println("Returning int from CommonModels");
+		//System.out.println("Returning int from CommonModels");
 		return Long.valueOf((random.nextInt(22) + 1));
 	}
 	
 	public Double getValueNormalDistribution(Long currIter) {
-		System.out.println("Returning double (normal distribution) from CommonModels");
+		//System.out.println("Returning double (normal distribution) from CommonModels");
 	    return Math.abs(random.nextDouble());
 	}
 

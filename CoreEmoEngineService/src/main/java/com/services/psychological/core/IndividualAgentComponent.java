@@ -97,9 +97,9 @@ public class IndividualAgentComponent {
 	private PreviousStateDAO prevStateDAO;
 	private List<PreviousState> prevStates;
 	
-	Long emosOccur = 0l;
-	Long calcOccur = 0l;
-	Long invokedEmosCount = 0l;
+	private Long emosOccur = 0l;
+	private Long calcOccur = 0l;
+	private Long invokedEmosCount = 0l;
 
 	private ModelVariables constVars;
 
@@ -303,7 +303,7 @@ public class IndividualAgentComponent {
 				isAgent = true;
 			}
 			
-			setEmotionsOccurrenceCount(emotion);
+				setEmotionsOccurrenceCount(emotion);
 		}	
 	}
 	
@@ -311,7 +311,6 @@ public class IndividualAgentComponent {
 		Double emoProb = (Double) emoAttitudes.get(emotion).get(
 				"probability");
 		Long emoCount = (Long) Math.round(workingIter * emoProb);
-		tempWorkingCount = 0l;
 		tempWorkingCount += emoCount;
 		emoAttitudes.get(emotion).put("occurrence_count", emoCount);
 
@@ -422,8 +421,6 @@ public class IndividualAgentComponent {
 	}
 	
 	private void updateWorkingCountForSimulation() {
-		System.out.println("Temp count --> " + tempWorkingCount);
-		System.out.println("Max iterations --> " + maxIter); 
 		if (tempWorkingCount < maxIter) {
 			workingIter = tempWorkingCount;
 		} else {
@@ -432,7 +429,6 @@ public class IndividualAgentComponent {
 	}
 	
 	private void setSimulationAttributes() {
-		simulation.setCurrIter(++currIter); 
 		simulation.setWorkingIter(workingIter);
 	}
 	
@@ -488,7 +484,6 @@ public class IndividualAgentComponent {
 			event = eventTabDAO
 					.getEventsBySimIdUserIdIterEventAndAgent(constVars.getSimId(),
 							constVars.getUserId(), currIter, eventID, agentID);
-			System.out.println("Retrieved event id --> " + event.getEventId()); 
 		}
 	}
 	
@@ -502,7 +497,6 @@ public class IndividualAgentComponent {
 	}
 	
 	private void setGoalValues() {
-		System.out.println("Agent Id --> " + agentTab.getAgentId()); 
 		AGoalValue = agentTab.getaGoalValue();
 		IGoalValue = agentTab.getiGoalValue();
 		RGoalValue = agentTab.getrGoalValue();
@@ -512,20 +506,23 @@ public class IndividualAgentComponent {
 		LinkedHashMap<String, Long> trigEmosByPrecedence = getEmosSortedByPrecedence();
 		Iterator<String> iterEmosByPrecedence = trigEmosByPrecedence.keySet()
 				.iterator();
-		
+		System.out.println("Inside invokeEmotions"); 
 		while (iterEmosByPrecedence.hasNext()) {
 			String emoToBeInvoked = iterEmosByPrecedence.next();
 
 			if ((eventID != -1) && (emoToBeInvoked.equalsIgnoreCase("joy")
 					|| emoToBeInvoked.equalsIgnoreCase("distress"))) {
+				System.out.println("Condition for desirability"); 
 				invokeDesirabilityEmos(emoToBeInvoked);
 			} else if ((eventID != -1) && (emoToBeInvoked.equalsIgnoreCase("happy-for")
 					|| emoToBeInvoked.equalsIgnoreCase("sorry-for")
 					|| emoToBeInvoked.equalsIgnoreCase("resentment")
 					|| emoToBeInvoked.equalsIgnoreCase("gloating"))) {
+				System.out.println("Condition for fortunes of others"); 
 				invokeFortunesOfOthersEmos(emoToBeInvoked);
 			} else if ((eventID != -1) && (emoToBeInvoked.equalsIgnoreCase("hope")
 					|| emoToBeInvoked.equalsIgnoreCase("fear"))) {
+				System.out.println("Condition for prospect"); 
 				invokeProspectEmos(emoToBeInvoked);
 			} else if ((eventID != -1) && (currIter > 1)
 					&& (emoToBeInvoked.equalsIgnoreCase("satisfaction")
@@ -533,21 +530,27 @@ public class IndividualAgentComponent {
 									.equalsIgnoreCase("fears-confirmed")
 							|| emoToBeInvoked.equalsIgnoreCase("relief") || emoToBeInvoked
 								.equalsIgnoreCase("disappointment"))) {
+				System.out.println("Condition for prospect confirmation"); 
 				invokeProspectConfirmationEmos(emoToBeInvoked);
 			} else if (emoToBeInvoked.equalsIgnoreCase("pride")
 					|| emoToBeInvoked.equalsIgnoreCase("self-reproach")) {
+				System.out.println("Condition for agent cog unit"); 
 				invokeAgentCogUnitEmos(emoToBeInvoked);
 			} else if (emoToBeInvoked.equalsIgnoreCase("appreciation")
 					|| emoToBeInvoked.equalsIgnoreCase("reproach")) {
+				System.out.println("Condition for agent no cog unit"); 
 				invokeAgentNoCogUnitEmos(emoToBeInvoked);
 			} else if ((eventID != -1) && (emoToBeInvoked.equalsIgnoreCase("gratitude")
 					|| emoToBeInvoked.equalsIgnoreCase("anger"))) {
+				System.out.println("Condition for event agent no cog unit");
 				invokeEventAgentNoCogUnitEmos(emoToBeInvoked);
 			} else if ((eventID != -1) && (emoToBeInvoked.equalsIgnoreCase("gratification")
 					|| emoToBeInvoked.equalsIgnoreCase("remorse"))) {
+				System.out.println("Condition for event agent cong unit"); 
 				invokeEventAgentCogUnitEmos(emoToBeInvoked);
 			} else if ((objectID != -1) && (emoToBeInvoked.equalsIgnoreCase("liking")
 					|| emoToBeInvoked.equalsIgnoreCase("disliking"))) {
+				System.out.println("Condition for object"); 
 				invokeObjectEmos(emoToBeInvoked);
 			} else {
 				System.err.println("Not a valid emotion for this iteration.");
@@ -587,6 +590,7 @@ public class IndividualAgentComponent {
 		calculateEventDerivedAttributes();
 		HashMap<String, Object> observedEmosValues = new HashMap<String, Object>();
 		Double potential = 0.0;
+		System.out.println("Trying " + emoToBeInvoked);
 		if (emoToBeInvoked.equalsIgnoreCase("joy") && (desireSelf > 0)) {
 			potential = EmotionFunctions.calcJoyPotential(getEmotionFactor(emoToBeInvoked),
 					Math.abs(desireSelf), eventGlobalVars);
@@ -613,6 +617,7 @@ public class IndividualAgentComponent {
 	}
 
 	private void invokeFortunesOfOthersEmos(String emoToBeInvoked) {
+		System.out.println("Trying " + emoToBeInvoked);
 		calculateEventDerivedAttributes();
 		Double emoFactor = getEmotionFactor(emoToBeInvoked);
 		Iterator<Long> iterNeighbours = neighbours.keySet().iterator();
@@ -646,6 +651,7 @@ public class IndividualAgentComponent {
 	}
 
 	private void invokeProspectEmos(String emoToBeInvoked) {
+		System.out.println("Trying " + emoToBeInvoked);
 		calculateEventDerivedAttributes();
 		Double emoFactor = getEmotionFactor(emoToBeInvoked);
 		HashMap<String, Object> observedEmosValues = new HashMap<String, Object>();
@@ -674,6 +680,7 @@ public class IndividualAgentComponent {
 	}
 	
 	private void invokeProspectConfirmationEmos(String emoToBeInvoked) {
+		System.out.println("Trying " + emoToBeInvoked);
 		HashMap<String, Object> observedEmosValues = new HashMap<String, Object>();
 		HashMap<String, Object> previousStateValues = new HashMap<String, Object>();
 		calculateEventDerivedAttributes();
@@ -727,6 +734,7 @@ public class IndividualAgentComponent {
 	
 	private void invokeAgentCogUnitEmos(String emoToBeInvoked)
 	{
+		System.out.println("Trying " + emoToBeInvoked);
 		HashMap<String, Object> observedEmosValues = new HashMap<String, Object>();
 		Double emoFactor = (Double)emoAttitudes.get(emoToBeInvoked).get("emotion_factor");
 		
@@ -763,6 +771,7 @@ public class IndividualAgentComponent {
 	
 	private void invokeAgentNoCogUnitEmos(String emoToBeInvoked)
 	{
+		System.out.println("Trying " + emoToBeInvoked);
 		HashMap<String, Object> observedEmosValues = new HashMap<String, Object>();
 		Double emoFactor = (Double)emoAttitudes.get(emoToBeInvoked).get("emotion_factor");
 		
@@ -800,6 +809,7 @@ public class IndividualAgentComponent {
 	
 	private void invokeEventAgentNoCogUnitEmos(String emoToBeInvoked)
 	{
+		System.out.println("Trying " + emoToBeInvoked);
 		setGoalValues();
 		calculateEventDerivedAttributes();
 		
@@ -844,6 +854,7 @@ public class IndividualAgentComponent {
 	
 	private void invokeEventAgentCogUnitEmos(String emoToBeInvoked)
 	{
+		System.out.println("Trying " + emoToBeInvoked);
 		setGoalValues();
 		calculateEventDerivedAttributes();
 		
@@ -889,6 +900,7 @@ public class IndividualAgentComponent {
 	
 	private void invokeObjectEmos(String emoToBeInvoked)
 	{
+		System.out.println("Trying " + emoToBeInvoked);
 		HashMap<String, Object> observedEmosValues = new HashMap<String, Object>();
 		Double emoFactor = (Double)emoAttitudes.get(emoToBeInvoked).get("emotion_factor");
 		initializeObject();
@@ -924,7 +936,6 @@ public class IndividualAgentComponent {
 		Double ePsychoProximity = 0.0;
 		Double eUnexpectedness = 0.0;
 		Double eArousal = 0.0;
-		System.out.println("Event id in calculateEventDerivedAttributes --> " + event.getEventId()); 
 
 			agentDesire = event.getAgentDesirability();
 
@@ -1012,26 +1023,29 @@ public class IndividualAgentComponent {
 	}
 	
 	private Double getEmotionThreshold(String emoToBeInvoked) {
+		System.out.println("Getting threshold for " + emoToBeInvoked); 
 		return (Double) emoAttitudes.get(
 				emoToBeInvoked).get("threshold");
 	}
 	
 	private void saveObservedEmotion(Map<String, Object> observedEmotionValues) {
+		System.out.println("Trying to save emotion"); 
 		ObservedEmotions obsEmos = new ObservedEmotions();
 		obsEmos.setIterNo(currIter);
 		obsEmos.setAgentId(agentID);
-		obsEmos.setTargetEvent(Long.parseLong((String)observedEmotionValues.get("targetEvent")));
-		obsEmos.setTargetNeighbour(Long.parseLong((String)observedEmotionValues.get("neighbour")));
-		obsEmos.setTargetObj(Long.parseLong((String)observedEmotionValues.get("targetObject")));
+		obsEmos.setTargetEvent((Long)observedEmotionValues.get("targetEvent"));
+		obsEmos.setTargetNeighbour((Long)observedEmotionValues.get("neighbour"));
+		obsEmos.setTargetObj((Long)observedEmotionValues.get("targetObject"));
 		obsEmos.setEmotion((String)observedEmotionValues.get("emoToBeInvoked"));
-		obsEmos.setEmoPot(Double.parseDouble((String)observedEmotionValues.get("potential")));
-		obsEmos.setEmoIntensity(Double.parseDouble((String)observedEmotionValues.get("intensity")));
+		obsEmos.setEmoPot((Double)observedEmotionValues.get("potential"));
+		obsEmos.setEmoIntensity((Double)observedEmotionValues.get("intensity"));
 		obsEmos.setUserId(constVars.getUserId());
 		obsEmos.setSimId(constVars.getSimId());
 		observedEmosDAO.saveAndFlush(obsEmos);
 	}
 	
 	private void savePreviousState(Map<String, Object> previousStateValues) {
+		System.out.println("Trying to save prev emotion");
 		PreviousState prevState = new PreviousState();
 		prevState.setEventId(eventID);
 		prevState.setAgentId(agentID);
