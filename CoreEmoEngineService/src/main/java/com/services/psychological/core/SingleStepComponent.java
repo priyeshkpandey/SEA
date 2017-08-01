@@ -231,24 +231,15 @@ public class SingleStepComponent {
 		// TODO insertion, update, agent's emotion and interactions
 		
 		Iterator<String> iterModels = models.keySet().iterator();
+		Map<Long, Long[]> eventObjectMapForIterations = new HashMap<Long, Long[]>();
 
 		while (iterModels.hasNext()) {
 			
 			try {
+				Long[] eventObjectArray = new Long[2];
 				String keyVal = iterModels.next();
 				insertTableValues(keyVal);
 				
-				// ***** Individual Agent's Emotions *****
-
-				//IndividualAgentComponent individualAgent = new IndividualAgentComponent(simulationId, agentId, targetEvent,
-					//	targetObject, constVars).individualEmotionsInvocation();
-				individualAgent.setAgentID(agentId);
-				individualAgent.setConstVars(constVars);
-				individualAgent.setEventID(targetEvent);
-				individualAgent.setObjectID(targetObject);
-				System.out.println("AgentId --> " + agentId + ", TargetEvent --> " + targetEvent + ", TargetObject --> " + targetObject); 
-				
-				individualAgent.individualEmotionsInvocation();
 				
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -279,6 +270,34 @@ public class SingleStepComponent {
 				e.printStackTrace();
 			}
 		}
+		
+		List<EventTab> events = eventDAO.getEventsForAgentBySimIdUserIdAndIter(constVars.getSimId(), constVars.getUserID(), currIter, agentId);
+		//Invoking Event and Agent related emotions
+		for (EventTab event : events) {
+			individualAgent.setAgentID(agentId);
+			individualAgent.setConstVars(constVars);
+			individualAgent.setEventID(event.getEventId());
+			individualAgent.setObjectID(-1l);
+			System.out.println("AgentId --> " + agentId + ", TargetEvent --> " + targetEvent + ", TargetObject --> " + targetObject); 
+			
+			individualAgent.individualEmotionsInvocation();
+		}
+		
+		List<ObjectTab> objects = objectDAO.getObjectsForAgentByIterUserAndSimId(currIter, agentId, constVars.getUserID(), constVars.getSimId());
+		//Invoke object related emotions
+		for (ObjectTab object : objects) {
+			individualAgent.setAgentID(agentId);
+			individualAgent.setConstVars(constVars);
+			individualAgent.setEventID(-1l);
+			individualAgent.setObjectID(object.getObjectId());
+			System.out.println("AgentId --> " + agentId + ", TargetEvent --> " + targetEvent + ", TargetObject --> " + targetObject); 
+			
+			individualAgent.individualEmotionsInvocation();
+		}
+		// ***** Individual Agent's Emotions *****
+
+		//IndividualAgentComponent individualAgent = new IndividualAgentComponent(simulationId, agentId, targetEvent,
+			//	targetObject, constVars).individualEmotionsInvocation();
 		
 		
 

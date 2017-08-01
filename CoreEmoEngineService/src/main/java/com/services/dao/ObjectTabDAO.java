@@ -1,5 +1,7 @@
 package com.services.dao;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -15,4 +17,8 @@ public interface ObjectTabDAO extends JpaRepository<ObjectTab, Long>, JpaSpecifi
 			@Param("agentId") Long agentId, @Param("userId") String userId,
 			@Param("simId") Long simId);
 
+	@Query("from ObjectTab ot where ot.iterNo = :iterNo AND ot.agentId = :agentId AND ot.userId = :userId AND ot.simId = :simId")
+	public List<ObjectTab> getObjectsForAgentByIterUserAndSimId(
+			@Param("iterNo") Long iterNo, @Param("agentId") Long agentId, 
+			@Param("userId") String userId, @Param("simId") Long simId);
 }

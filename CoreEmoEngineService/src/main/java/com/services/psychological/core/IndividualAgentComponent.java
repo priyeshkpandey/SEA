@@ -175,7 +175,7 @@ public class IndividualAgentComponent {
 	}
 	
 	private Boolean isNeighbourEmotionTarget(Long neighbour) {
-		return (Boolean) neighbours.get(neighbour).get("emotion_target");
+		return ((Long)neighbours.get(neighbour).get("emotion_target") == 1);
 	}
 
 	public void individualEmotionsInvocation()
@@ -524,7 +524,7 @@ public class IndividualAgentComponent {
 					|| emoToBeInvoked.equalsIgnoreCase("fear"))) {
 				System.out.println("Condition for prospect"); 
 				invokeProspectEmos(emoToBeInvoked);
-			} else if ((eventID != -1) && (currIter > 1)
+			} else if ((eventID != -1) && (currIter > 0)
 					&& (emoToBeInvoked.equalsIgnoreCase("satisfaction")
 							|| emoToBeInvoked
 									.equalsIgnoreCase("fears-confirmed")
@@ -745,7 +745,7 @@ public class IndividualAgentComponent {
 			Double potential = 0.0;
 			Double intensity = 0.0;
 			
-			if((Boolean)neighbours.get(agentNeighbour).get("emotion_target")) {
+			if(isNeighbourEmotionTarget(agentNeighbour)) {
 				calculateAgentBasedAttributes(agentNeighbour);
 				
 				if(emoToBeInvoked.equalsIgnoreCase("pride")
@@ -780,7 +780,7 @@ public class IndividualAgentComponent {
 		while(iterNeighbours.hasNext()) {
 			Long agentNeighbour = iterNeighbours.next();
 			
-			if((Boolean)neighbours.get(agentNeighbour).get("emotion_target")) {
+			if(isNeighbourEmotionTarget(agentNeighbour)) {
 				calculateAgentBasedAttributes(agentNeighbour);
 				Double potential = 0.0;
 				Double intensity = 0.0;
@@ -821,7 +821,7 @@ public class IndividualAgentComponent {
 		while(iterNeighbours.hasNext()) {
 			Long agentNeighbour = iterNeighbours.next();
 			
-			if((Boolean)neighbours.get(agentNeighbour).get("emotion_target")) {
+			if(isNeighbourEmotionTarget(agentNeighbour)) {
 				calculateAgentBasedAttributes(agentNeighbour);
 				Double potential = 0.0;
 				Double intensity = 0.0;
@@ -866,7 +866,7 @@ public class IndividualAgentComponent {
 		while(iterNeighbours.hasNext()) {
 			Long agentNeighbour = iterNeighbours.next();
 			
-			if((Boolean)neighbours.get(agentNeighbour).get("emotion_target")) {
+			if(isNeighbourEmotionTarget(agentNeighbour)) {
 				calculateAgentBasedAttributes(agentNeighbour);
 				Double potential = 0.0;
 				Double intensity = 0.0;
@@ -1051,8 +1051,8 @@ public class IndividualAgentComponent {
 		prevState.setAgentId(agentID);
 		prevState.setIterNo(currIter);
 		prevState.setEmotion((String)previousStateValues.get("emoToBeInvoked"));
-		prevState.setHopePotential(Double.parseDouble((String)previousStateValues.get("hopePotential")));
-		prevState.setFearPotential(Double.parseDouble((String)previousStateValues.get("fearPotential")));
+		prevState.setHopePotential((Double)previousStateValues.get("hopePotential"));
+		prevState.setFearPotential((Double)previousStateValues.get("fearPotential"));
 		prevState.setUserId(constVars.getUserId());
 		prevState.setSimId(constVars.getSimId());
 		prevStateDAO.saveAndFlush(prevState);
