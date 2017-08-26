@@ -63,6 +63,11 @@ public class InteractionAttitudesSpecs implements Specification<InteractionAttit
 			pAnd = cb.and(pAnd, root.get("influenceThreshold").in(interactAttitudes.getInfluenceThreshold()));
 		}
 		
+		if(interactAttitudes.getInfluenceValue() != null)
+		{
+			pAnd = cb.and(pAnd, root.get("influenceValue").in(interactAttitudes.getInfluenceValue()));
+		}
+		
 		if(interactAttitudes.getInteractProb() != null)
 		{
 			pAnd = cb.and(pAnd, root.get("interactProb").in(interactAttitudes.getInteractProb()));

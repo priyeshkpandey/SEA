@@ -63,6 +63,7 @@ public class SingleStepComponent {
 	private Long targetObject;
 	private String targetEmotion;
 	private String targetVariable;
+	private String currentInteractKey;
 
 	private ArrayList<String> keyRowInserted = new ArrayList<String>();
 	private HashMap<String, ArrayList<String>> varsToTableMetaData = new HashMap<String, ArrayList<String>>();
@@ -271,6 +272,9 @@ public class SingleStepComponent {
 			}
 		}
 		
+		// ***** Start interactions and set table values *****
+		setInteractions();
+		
 		List<EventTab> events = eventDAO.getEventsForAgentBySimIdUserIdAndIter(constVars.getSimId(), constVars.getUserID(), currIter, agentId);
 		//Invoking Event and Agent related emotions
 		for (EventTab event : events) {
@@ -294,16 +298,6 @@ public class SingleStepComponent {
 			
 			individualAgent.individualEmotionsInvocation();
 		}
-		// ***** Individual Agent's Emotions *****
-
-		//IndividualAgentComponent individualAgent = new IndividualAgentComponent(simulationId, agentId, targetEvent,
-			//	targetObject, constVars).individualEmotionsInvocation();
-		
-		
-
-		// ***** Start interactions and set table values *****
-
-					setInteractions();
 
 	}
 
@@ -455,48 +449,66 @@ public class SingleStepComponent {
 
 		
 			Object varValue = null;
-
-			String returnType = (String) models.get(keyVal).get("return_type");
-
-			if ((Boolean) models.get(keyVal).get("is_function")) {
-				String classPath = (String) models.get(keyVal)
-						.get("class_path");
-				String methodName = (String) models.get(keyVal).get(
-						"method_name");
-
-				Class classObject = Class.forName(classPath);
-				Object classInstance = classObject.newInstance();
-
-				Method mthd = classObject.getMethod(methodName, Long.class);
-			    varValue = mthd.invoke(classInstance, currIter);
+			
+			if (!keyVal.split(",")[6].equalsIgnoreCase("1")) {
 				
+				String returnType = (String) models.get(keyVal).get("return_type");
 
+				if ((Boolean) models.get(keyVal).get("is_function")) {
+					String classPath = (String) models.get(keyVal)
+							.get("class_path");
+					String methodName = (String) models.get(keyVal).get(
+							"method_name");
+
+					Class classObject = Class.forName(classPath);
+					Object classInstance = classObject.newInstance();
+
+					Method mthd = classObject.getMethod(methodName, Long.class);
+				    varValue = mthd.invoke(classInstance, currIter);
+					
+
+				} else {
+					RestTemplate restTemplate = new RestTemplate();
+
+					String apiPath = (String) models.get(keyVal).get("method_name");
+					ModelResponseExtractor modelExtractor = new ModelResponseExtractor();
+
+					Map<String, Object> urlParams = new HashMap<String, Object>();
+					urlParams.put("simId", constVars.getSimId());
+					urlParams.put("userId", constVars.getUserId());
+					urlParams.put("iter", currIter);
+
+					ModelValue modValResponse = restTemplate.execute(apiPath,
+							HttpMethod.GET, null, modelExtractor, urlParams);
+
+					returnType = modValResponse.getType();
+					varValue = modValResponse.getValue();
+
+				}
+
+				if (returnType.equalsIgnoreCase("INT")) {
+					entityReflect.invokeSetterMethodByColumnName(column, entity,
+							(Long) varValue);
+				} else if (returnType.equalsIgnoreCase("DOUBLE")) {
+					entityReflect.invokeSetterMethodByColumnName(column, entity,
+							(Double) varValue);
+				}
 			} else {
-				RestTemplate restTemplate = new RestTemplate();
-
-				String apiPath = (String) models.get(keyVal).get("method_name");
-				ModelResponseExtractor modelExtractor = new ModelResponseExtractor();
-
-				Map<String, Object> urlParams = new HashMap<String, Object>();
-				urlParams.put("simId", constVars.getSimId());
-				urlParams.put("userId", constVars.getUserId());
-				urlParams.put("iter", currIter);
-
-				ModelValue modValResponse = restTemplate.execute(apiPath,
-						HttpMethod.GET, null, modelExtractor, urlParams);
-
-				returnType = modValResponse.getType();
-				varValue = modValResponse.getValue();
-
+				varValue = entityReflect.invokeGetterMethodByColumnName(column, entity);
+				String interactValue = (String)interactionAttitudes.get(currentInteractKey).get(7);
+				
+				try {
+					Long interactValueLong = Long.parseLong(interactValue);
+					varValue = (Long)varValue + interactValueLong;
+					entityReflect.invokeSetterMethodByColumnName(column, entity, (Long) varValue);
+				} catch (NumberFormatException nfe) {
+					Double interactValueDouble = Double.parseDouble(interactValue);
+					varValue = (Double)varValue + interactValueDouble;
+					entityReflect.invokeSetterMethodByColumnName(column, entity, (Double) varValue);
+				}
 			}
 
-			if (returnType.equalsIgnoreCase("INT")) {
-				entityReflect.invokeSetterMethodByColumnName(column, entity,
-						(Long) varValue);
-			} else if (returnType.equalsIgnoreCase("DOUBLE")) {
-				entityReflect.invokeSetterMethodByColumnName(column, entity,
-						(Double) varValue);
-			}
+			
 
 			existingList = entityReflect.getEntityBySpec(dao, entity, spec);
 			if (existingList.isEmpty()) {
@@ -515,8 +527,6 @@ public class SingleStepComponent {
 					currIter, agentId, constVars.getUserId(), constVars.getSimId());
 
 			for (InteractionAttitudes interactAtts:interactList) {
-				String var = interactAtts.getVariable();
-
 				
 					String interactKey = interactAtts.getIterNo()
 							+ "," + interactAtts.getAgentId1() + ","
@@ -537,6 +547,7 @@ public class SingleStepComponent {
 					interactVals.add(interactAtts.getInfluenceThreshold());
 					interactVals.add(precedence);
 					interactVals.add(interactAtts.getIsInfluencePersists());
+					interactVals.add(interactAtts.getInfluenceValue());
 
 					
 					interactionAttitudes.put(interactKey, interactVals);
@@ -568,13 +579,13 @@ public class SingleStepComponent {
 								.nextInt(influenceRange) == (int) (influenceRange / 2));
 
 						if (isInfluence) {
-							double influence = (Double) interactionAttitudes
+							Double influence = (Double) interactionAttitudes
 									.get(interactKey).get(1);
-							double influenceFilter = (Double) interactionAttitudes
+							Double influenceFilter = (Double) interactionAttitudes
 									.get(interactKey).get(2);
-							double influenceThreshold = (Double) interactionAttitudes
+							Double influenceThreshold = (Double) interactionAttitudes
 									.get(interactKey).get(4);
-							double influenceIntensity = influenceThreshold
+							Double influenceIntensity = influenceThreshold
 									- (influence - influenceFilter);
 
 							if (influenceIntensity > 0) {
@@ -594,6 +605,7 @@ public class SingleStepComponent {
 												// is_interaction is equal to
 												// '1'
 										+ interactKey.split(",")[2];
+								currentInteractKey = interactKey;
 
 								insertTableValues(modelKey);
 

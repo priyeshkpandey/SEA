@@ -64,6 +64,9 @@ public class InteractionAttitudes implements Serializable{
 	@Column(name="influence_threshold")
 	Double influenceThreshold;
 	
+	@Column(name="influence_value")
+	String influenceValue;
+	
 	@Column(name="user_id")
 	String userId;
 	
@@ -198,6 +201,14 @@ public class InteractionAttitudes implements Serializable{
 
 	public void setInfluenceThreshold(Double influenceThreshold) {
 		this.influenceThreshold = influenceThreshold;
+	}
+	
+	public String getInfluenceValue() {
+		return influenceValue;
+	}
+
+	public void setInfluenceValue(String influenceValue) {
+		this.influenceValue = influenceValue;
 	}
 
 	public String getUserId() {

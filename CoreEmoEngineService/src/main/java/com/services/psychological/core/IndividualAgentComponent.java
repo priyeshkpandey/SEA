@@ -532,12 +532,12 @@ public class IndividualAgentComponent {
 								.equalsIgnoreCase("disappointment"))) {
 				System.out.println("Condition for prospect confirmation"); 
 				invokeProspectConfirmationEmos(emoToBeInvoked);
-			} else if (emoToBeInvoked.equalsIgnoreCase("pride")
-					|| emoToBeInvoked.equalsIgnoreCase("self-reproach")) {
+			} else if ((eventID != -1) && (emoToBeInvoked.equalsIgnoreCase("pride")
+					|| emoToBeInvoked.equalsIgnoreCase("self-reproach"))) {
 				System.out.println("Condition for agent cog unit"); 
 				invokeAgentCogUnitEmos(emoToBeInvoked);
-			} else if (emoToBeInvoked.equalsIgnoreCase("appreciation")
-					|| emoToBeInvoked.equalsIgnoreCase("reproach")) {
+			} else if ((eventID != -1) && (emoToBeInvoked.equalsIgnoreCase("appreciation")
+					|| emoToBeInvoked.equalsIgnoreCase("reproach"))) {
 				System.out.println("Condition for agent no cog unit"); 
 				invokeAgentNoCogUnitEmos(emoToBeInvoked);
 			} else if ((eventID != -1) && (emoToBeInvoked.equalsIgnoreCase("gratitude")
