@@ -60,7 +60,7 @@ public class EntityReflection {
 
 	public <T, V> void invokeSetterMethodByColumnName(String columnName, T entity, V value) {
 		if (entity instanceof Serializable) {
-
+            System.out.println("Setting value of " + columnName + " in " + entity.getClass().getName() + " value " + value); 
 			try {
 				BeanInfo info = Introspector.getBeanInfo(entity.getClass());
 				PropertyDescriptor[] props = info.getPropertyDescriptors();

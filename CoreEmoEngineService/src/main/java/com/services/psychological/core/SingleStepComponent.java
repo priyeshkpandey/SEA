@@ -273,8 +273,11 @@ public class SingleStepComponent {
 		}
 		
 		// ***** Start interactions and set table values *****
-		setInteractions();
+		//setInteractions();
 		
+	}
+	
+	public void invokeEmotions() {
 		List<EventTab> events = eventDAO.getEventsForAgentBySimIdUserIdAndIter(constVars.getSimId(), constVars.getUserID(), currIter, agentId);
 		//Invoking Event and Agent related emotions
 		for (EventTab event : events) {
@@ -298,7 +301,6 @@ public class SingleStepComponent {
 			
 			individualAgent.individualEmotionsInvocation();
 		}
-
 	}
 
 	private void insertTableValues(String keyVal) throws BeansException, Exception {
@@ -355,7 +357,7 @@ public class SingleStepComponent {
 			} else if (tableName.equals("interaction_attitudes")) {
 				interactAttsDAO = (InteractionAttitudesDAO)context.getBean(InteractionAttitudesDAO.class);
 				interactAtts = interactAttsDAO.getUniqueInteractionAttitudes(currIter, sourceAgent, targetAgent, targetVariable, thirdPerson, 
-						targetEvent, targetObject, var, constVars.getUserID(), constVars.getSimId());
+						targetEvent, targetObject, targetEmotion, constVars.getUserID(), constVars.getSimId());
 				if (null == interactAtts) {
 					interactAtts = new InteractionAttitudes();	
 				}
@@ -492,8 +494,12 @@ public class SingleStepComponent {
 				} else if (returnType.equalsIgnoreCase("DOUBLE")) {
 					entityReflect.invokeSetterMethodByColumnName(column, entity,
 							(Double) varValue);
+				} else if (returnType.equalsIgnoreCase("STR")) {
+					entityReflect.invokeSetterMethodByColumnName(column, entity,
+							(String) varValue);
 				}
 			} else {
+				System.out.println("Setting values for interaction"); 
 				varValue = entityReflect.invokeGetterMethodByColumnName(column, entity);
 				String interactValue = (String)interactionAttitudes.get(currentInteractKey).get(7);
 				
@@ -519,9 +525,9 @@ public class SingleStepComponent {
 	}
 	
 	
-	private void setInteractions() {
+	public void setInteractions() {
 		try {
-
+            System.out.println("Inside setInteractions"); 
 			InteractionAttitudesDAO interactDAO = context.getBean(InteractionAttitudesDAO.class);
 			List<InteractionAttitudes> interactList = interactDAO.getAttitudesByIterAgentUserAndSimIdPrecedenceSorted(
 					currIter, agentId, constVars.getUserId(), constVars.getSimId());
@@ -532,7 +538,7 @@ public class SingleStepComponent {
 							+ "," + interactAtts.getAgentId1() + ","
 							+ interactAtts.getAgentId2() + ","
 							+ interactAtts.getVariable() + ","
-							+ interactAtts.getThirdPerson() + ","
+							+ thirdPerson + ","
 							+ interactAtts.getTargetEvent() + ","
 							+ interactAtts.getTargetObject() + ","
 							+ interactAtts.getTargetEmotion();
@@ -562,10 +568,10 @@ public class SingleStepComponent {
 			while (sortedInteractionsKeys.hasNext()) {
 				String interactKey = sortedInteractionsKeys.next();
 
-				Boolean isInfluencePersists = (Boolean) interactionAttitudes
+				Long isInfluencePersists = (Long) interactionAttitudes
 						.get(interactKey).get(6);
 
-				if (isInfluencePersists) {
+				if (isInfluencePersists != 0) {
 
 					int interactRange = (int) (1 / (Double) interactionAttitudes
 							.get(interactKey).get(0));
@@ -574,7 +580,7 @@ public class SingleStepComponent {
 
 					if (isProbable) {
 						int influenceRange = (int) (1 / (Double) interactionAttitudes
-								.get(interactKey).get(6));
+								.get(interactKey).get(3));
 						boolean isInfluence = (probGenerator
 								.nextInt(influenceRange) == (int) (influenceRange / 2));
 
@@ -601,9 +607,7 @@ public class SingleStepComponent {
 																			// null
 																			// for
 																			// interactions
-										+ "1" // for interactions,
-												// is_interaction is equal to
-												// '1'
+										+ "1" + "," // for interactions, is_interaction is equal to 1
 										+ interactKey.split(",")[2];
 								currentInteractKey = interactKey;
 

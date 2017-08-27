@@ -669,6 +669,9 @@ public class IndividualAgentComponent {
 			potential = EmotionFunctions.calcFearPotential(emoFactor, Math.abs(desireSelf), likelihood, eventGlobalVars);
 			previousStateValues.put("fearPotential", potential);
 			previousStateValues.put("hopePotential", 0.0);
+		} else {
+			previousStateValues.put("fearPotential", 0.0);
+			previousStateValues.put("hopePotential", 0.0);
 		}
 		
 		intensity = potential - getEmotionThreshold(emoToBeInvoked);

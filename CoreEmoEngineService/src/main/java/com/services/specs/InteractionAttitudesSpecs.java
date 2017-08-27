@@ -90,7 +90,7 @@ public class InteractionAttitudesSpecs implements Specification<InteractionAttit
 		
 		if(interactAttitudes.getTargetObject() != null)
 		{
-			pAnd = cb.and(pAnd, root.get("targetAgent").in(interactAttitudes.getTargetObject()));
+			pAnd = cb.and(pAnd, root.get("targetObject").in(interactAttitudes.getTargetObject()));
 		}
 		
 		if(interactAttitudes.getTargetEmotion() != null)

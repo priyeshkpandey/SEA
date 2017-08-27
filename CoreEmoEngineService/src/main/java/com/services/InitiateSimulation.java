@@ -57,17 +57,27 @@ public class InitiateSimulation extends BaseController {
 		while ((simToRun.getCurrIter() <= simToRun.getWorkingIter())
 				&& (simToRun.getCurrIter() <= simToRun.getMaxIter())) {
 
+			singleStep.setConstVars(constVars);
+			singleStep.setCurrIter(simToRun.getCurrIter());
+			singleStep.setSimulationId(simId);
+			singleStep.setThirdPerson(personOfInterest);
+			singleStep.setUserID(userId);
+			
 			for (Long agentId : agents) {
 				singleStep.setAgentId(agentId);
-				singleStep.setConstVars(constVars);
-				singleStep.setCurrIter(simToRun.getCurrIter());
-				singleStep.setSimulationId(simId);
-				singleStep.setThirdPerson(personOfInterest);
-				singleStep.setUserID(userId);
-				
 				singleStep.initModelsAndExecuteSingleStep();
 			}
-
+			
+			for (Long agentId : agents) {
+				singleStep.setAgentId(agentId);
+				singleStep.setInteractions();
+			}
+			
+			for (Long agentId : agents) {
+				singleStep.setAgentId(agentId);
+				singleStep.invokeEmotions();
+			}
+			
 			simToRun = simDAO.getSimulationByUserAndSimId(userId, simId);
 			simToRun.setCurrIter(++currIter);
 			simDAO.saveAndFlush(simToRun);

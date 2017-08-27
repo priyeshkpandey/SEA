@@ -59,7 +59,7 @@ public class InteractionAttitudes implements Serializable{
 	Long precedence;
 	
 	@Column(name="is_influence_persists")
-	Boolean isInfluencePersists;
+	Long isInfluencePersists;
 	
 	@Column(name="influence_threshold")
 	Double influenceThreshold;
@@ -97,6 +97,7 @@ public class InteractionAttitudes implements Serializable{
 		this.agentId1 = agentId1;
 	}
 
+
 	public Long getAgentId2() {
 		return agentId2;
 	}
@@ -128,8 +129,6 @@ public class InteractionAttitudes implements Serializable{
 	public void setTargetEvent(Long targetEvent) {
 		this.targetEvent = targetEvent;
 	}
-
-	
 
 	public Long getTargetObject() {
 		return targetObject;
@@ -187,11 +186,11 @@ public class InteractionAttitudes implements Serializable{
 		this.precedence = precedence;
 	}
 
-	public Boolean getIsInfluencePersists() {
+	public Long getIsInfluencePersists() {
 		return isInfluencePersists;
 	}
 
-	public void setIsInfluencePersists(Boolean isInfluencePersists) {
+	public void setIsInfluencePersists(Long isInfluencePersists) {
 		this.isInfluencePersists = isInfluencePersists;
 	}
 
