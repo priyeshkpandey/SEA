@@ -3,6 +3,7 @@ package com.services.entities.game;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -11,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.services.game.enums.RangeConverter;
 import com.services.game.enums.ValueRanges;
 
 @SuppressWarnings("serial")
@@ -29,8 +31,8 @@ public class GameVocabulary implements Serializable {
 	@Column(name="value_type")
 	String valueType;
 	
-	@Column(name="value_type")
-	@Enumerated(EnumType.STRING)
+	@Column(name="range")
+	@Convert(converter = RangeConverter.class)
 	ValueRanges range;
 	
 	@Column(name="statement")

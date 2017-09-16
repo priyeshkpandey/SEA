@@ -2,18 +2,18 @@ package com.services.game.enums;
 
 public enum ValueRangesInteger implements ValueRanges<ValueRangesInteger> {
 	
-	ZERO(0, 0), ONE(1, 1), ZERO_TO_FIVE(0, 5), FIVE_TO_TEN(5, 10), TEN_TO_FIFTEEN(10, 15), FIFTEEN_TO_TWENTY(15, 20),
-	GREATER_THAN_TWENTY(20, 100);
+	ZERO(0l, 0l), ONE(1l, 1l), ZERO_TO_FIVE(0l, 5l), FIVE_TO_TEN(5l, 10l), TEN_TO_FIFTEEN(10l, 15l), FIFTEEN_TO_TWENTY(15l, 20l),
+	GREATER_THAN_TWENTY(20l, 100l);
 	
-	private Integer lowerLimit;
-	private Integer higherLimit;
+	private Long lowerLimit;
+	private Long higherLimit;
 	
-	ValueRangesInteger(Integer lowerLimit, Integer higherLimit) {
+	ValueRangesInteger(Long lowerLimit, Long higherLimit) {
 		this.lowerLimit = lowerLimit;
 		this.higherLimit = higherLimit;
 	}
 	
-	public Integer getLowerLimit() { return lowerLimit; }
-	public Integer getHigherLimit() { return higherLimit; }
+	public Long getLowerLimit() { return lowerLimit; }
+	public Long getHigherLimit() { return higherLimit; }
 
 }

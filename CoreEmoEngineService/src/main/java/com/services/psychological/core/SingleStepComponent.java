@@ -26,6 +26,8 @@ import com.services.dao.InteractionAttitudesDAO;
 import com.services.dao.ObjectTabDAO;
 import com.services.dao.ResourceModelDAO;
 import com.services.dao.VariableMappingDAO;
+import com.services.dao.game.GameStatementsDAO;
+import com.services.dao.game.GameVocabularyDAO;
 import com.services.emo.utils.EntityReflection;
 import com.services.entities.AgentNetwork;
 import com.services.entities.AgentTab;
@@ -35,6 +37,9 @@ import com.services.entities.InteractionAttitudes;
 import com.services.entities.ObjectTab;
 import com.services.entities.ResourceModel;
 import com.services.entities.VariableMapping;
+import com.services.entities.game.GameStatements;
+import com.services.entities.game.GameVocabulary;
+import com.services.game.enums.AgentNames;
 import com.services.specs.AgentNetworkSpecs;
 import com.services.specs.AgentTabSpecs;
 import com.services.specs.EmotionalAttitudesSpecs;
@@ -316,7 +321,7 @@ public class SingleStepComponent {
 			String tableName = varsToTableMetaData.get(var).get(0);
 			String colName = varsToTableMetaData.get(var).get(1);
 			String condCols = varsToTableMetaData.get(var).get(2);
-
+			
 			String[] condColsArray = condCols.split(",");
 
 			if (tableName.equals("agent_network")) {
@@ -373,7 +378,7 @@ public class SingleStepComponent {
 				setEntityFieldsAndSave(object, objectDAO, condColsArray,
 						new ObjectTabSpecs(object), keyVal, colName);
 			}
-
+			
 		}
 	}
 
@@ -452,7 +457,9 @@ public class SingleStepComponent {
 		
 			Object varValue = null;
 			
-			if (!keyVal.split(",")[6].equalsIgnoreCase("1")) {
+			String isInteraction = keyVal.split(",")[6];
+			
+			if (!isInteraction.equalsIgnoreCase("1")) {
 				
 				String returnType = (String) models.get(keyVal).get("return_type");
 
@@ -521,6 +528,65 @@ public class SingleStepComponent {
 				entityReflect.invokeJpaSave(dao, entity);
 			}
 		
+			// Start Game Steps
+			String var = keyVal.split(",")[0];
+			GameVocabularyDAO gameVocabDAO = (GameVocabularyDAO)context.getBean(GameVocabularyDAO.class);
+			List<GameVocabulary> gameVocabs = gameVocabDAO.getVocabularyForVariable(var);
+			GameStatements gameStatements = null;
+			if (null != gameVocabs && !gameVocabs.isEmpty()) {
+				gameStatements = new GameStatements();
+				if (entity.getClass().getName().contains("InteractionAttitudes")) {
+					gameStatements.setAgentId(targetAgent);
+				} else {
+					gameStatements.setAgentId(sourceAgent);
+				}
+				
+				gameStatements.setIterNo(currIter);
+				gameStatements.setSimId(constVars.getSimId());
+				gameStatements.setUserId(constVars.getUserId());
+				
+				for(GameVocabulary gameVocab : gameVocabs) {
+					
+					if (gameVocab.getValueType().equalsIgnoreCase("DOUBLE")) {
+						
+						if (((Double)varValue).compareTo((Double)gameVocab.getRange().getLowerLimit()) >= 0
+							&& ((Double)varValue).compareTo((Double)gameVocab.getRange().getHigherLimit()) < 0) {
+							gameStatements.setStatement(gameVocab.getStatement()); 
+							break;
+						}
+						
+					} else if (gameVocab.getValueType().equalsIgnoreCase("INT")) {
+						
+						if (((Long)varValue).compareTo((Long)gameVocab.getRange().getLowerLimit()) == 0
+								&& ((Long)varValue).compareTo((Long)gameVocab.getRange().getHigherLimit()) == 0) {
+							gameStatements.setStatement(gameVocab.getStatement()); 
+							break;
+						} else if (((Long)varValue).compareTo((Long)gameVocab.getRange().getLowerLimit()) >= 0
+								&& ((Long)varValue).compareTo((Long)gameVocab.getRange().getHigherLimit()) < 0) {
+							gameStatements.setStatement(gameVocab.getStatement()); 
+							break;
+						}
+						
+					}
+				}
+				
+				if (null != gameStatements.getStatement()) {
+					if (gameStatements.getStatement().contains("{agent}")) {
+						String modifiedStatement = gameStatements.getStatement().replace("{agent}", AgentNames.getAgentNameById(sourceAgent));
+						gameStatements.setStatement(modifiedStatement);
+					} else if (gameStatements.getStatement().contains("{emotion}")) {
+						String modifiedStatement = gameStatements.getStatement().replace("{emotion}", targetEmotion);
+						gameStatements.setStatement(modifiedStatement);
+					}
+					
+					GameStatementsDAO gameStatementDAO = (GameStatementsDAO)context.getBean(GameStatementsDAO.class);
+					gameStatementDAO.save(gameStatements);
+				}
+				
+				
+			}
+			
+            // End Game Steps 
 
 	}
 	
