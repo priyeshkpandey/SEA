@@ -50,8 +50,8 @@ public class InitiateSimulation extends BaseController {
 		SimulationDAO simDAO = context.getBean(SimulationDAO.class);
 		Simulation simToRun = simDAO.getSimulationByUserAndSimId(userId, simId);
 
-		constVars.setUserID(userId);
-		constVars.setSimulationId(simId);
+		constVars.setUserId(userId);
+		constVars.setSimId(simId);
 
 		Long currIter = 0l;
 		while ((simToRun.getCurrIter() <= simToRun.getWorkingIter())
