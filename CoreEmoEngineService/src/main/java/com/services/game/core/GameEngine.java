@@ -11,11 +11,14 @@ import org.springframework.stereotype.Component;
 import com.services.dao.ObservedEmotionsDAO;
 import com.services.dao.game.GamePlayerStatementsDAO;
 import com.services.dao.game.GameQaDAO;
+import com.services.dao.game.GameQaStateDAO;
 import com.services.dao.game.GameStatementsDAO;
 import com.services.entities.ObservedEmotions;
 import com.services.entities.game.GamePlayerStatements;
 import com.services.entities.game.GameQa;
+import com.services.entities.game.GameQaState;
 import com.services.entities.game.GameStatements;
+import com.services.entities.game.QuestionToPost;
 import com.services.entities.game.StatementToPost;
 import com.services.game.enums.AgentNames;
 import com.services.game.enums.Emotions;
@@ -140,7 +143,7 @@ public class GameEngine {
 		return gameQa;
 	}
 	
-	public StatementToPost postQuestionForPlayer(String playerId, Long simId, Long iterNo) {
+	public StatementToPost postStatementForPlayer(String playerId, Long simId, Long iterNo) {
 		GamePlayerStatementsDAO gamePlayerStatementsDAO = (GamePlayerStatementsDAO)context.getBean(GamePlayerStatementsDAO.class);
 		List<GamePlayerStatements> gamePlayerStatements = gamePlayerStatementsDAO.getUnpresentedStatementsForPlayerByGameAndIter(playerId, simId, iterNo);
 		int randomIndex = random.nextInt(gamePlayerStatements.size());
@@ -162,6 +165,82 @@ public class GameEngine {
 		
 		return statementToPost;
 		
+	}
+	
+	public QuestionToPost postQuestionForPlayer(String playerId, Long simId) {
+		
+		GameQaDAO gameQaDAO = (GameQaDAO)context.getBean(GameQaDAO.class);
+		GameQaStateDAO gameStateDAO = (GameQaStateDAO)context.getBean(GameQaStateDAO.class);
+		
+		List<GameQa> gameQuestions = gameQaDAO.getGamesBySimId(simId);
+		List<GameQaState> gameStateQuestions = gameStateDAO.getAskedQuestionsByPlayerAndSimId(playerId, simId);
+		GameQa unaskedQuestion = getUnaskedQuestion(gameQuestions, gameStateQuestions);
+		
+		GamePlayerStatementsDAO gamePlayerStatementsDAO = (GamePlayerStatementsDAO)context.getBean(GamePlayerStatementsDAO.class);
+		Long totalStatements = gamePlayerStatementsDAO.getCountOfAllStatementsForGameByPlayer(playerId, simId);
+		Long totalPresentedStatements = gamePlayerStatementsDAO.getCountOfPresentedStatementsForGameByPlayer(playerId, simId);
+		
+	    long score = 6000 - (6000/totalStatements)*totalPresentedStatements;
+		
+		GameQaState questionState = new GameQaState();
+		questionState.setCorrectAnswer(unaskedQuestion.getAnswer());
+		questionState.setPlayerId(playerId);
+		questionState.setQaId(unaskedQuestion.getId());
+		questionState.setScoreForAnswer(score);
+		questionState.setSimId(simId);
+		questionState = gameStateDAO.saveAndFlush(questionState);
+		String options = unaskedQuestion.getOptionOne() + "," + unaskedQuestion.getOptionTwo() + "," + unaskedQuestion.getOptionThree() + "," + unaskedQuestion.getOptionFour() + ","
+				+ unaskedQuestion.getOptionNone();
+		
+		QuestionToPost questionToPost = new QuestionToPost();
+		questionToPost.setQuestion(unaskedQuestion.getQuestion());
+		questionToPost.setOptions(options);
+		questionToPost.setQaStateId(questionState.getId());
+		
+		return questionToPost;
+		
+	}
+	
+	private GameQa getUnaskedQuestion(List<GameQa> gameQuestions, List<GameQaState> gameStateQuestions) {
+		
+		GameQa unaskedQuestion = null;
+		do {
+			unaskedQuestion = gameQuestions.get(random.nextInt(gameStateQuestions.size()));
+		}while (isQuestionAlreadyAsked(unaskedQuestion, gameStateQuestions));
+		
+		return unaskedQuestion;
+	}
+	
+	private Boolean isQuestionAlreadyAsked(GameQa gameQa, List<GameQaState> gameStateQuestions) {
+		
+		for(GameQaState askedQuestion : gameStateQuestions) {
+			if (askedQuestion.getQaId() == gameQa.getId()) {
+				return true;
+			}
+		}
+		return false;
+		
+	}
+	
+	public Boolean processSelectedAnswer(Long qaStateId, String selectedAnswer) {
+		GameQaStateDAO gameStateDAO = (GameQaStateDAO)context.getBean(GameQaStateDAO.class);
+		GameQaState questionState = gameStateDAO.getOne(qaStateId);
+		boolean result = questionState.getCorrectAnswer().equalsIgnoreCase(selectedAnswer);
+		questionState.setSelectedAnswer(selectedAnswer);
+		Long isAnswerCorrect = null;
+		if(result) {
+			isAnswerCorrect = 1l;
+		} else {
+			isAnswerCorrect = 0l;
+		}
+		questionState.setIsAnswerCorrect(isAnswerCorrect);
+		gameStateDAO.saveAndFlush(questionState);
+		return result;
+	}
+	
+	public Long getScoreForThePlayerByGame(String playerId, Long simId) {
+		GameQaStateDAO gameStateDAO = (GameQaStateDAO)context.getBean(GameQaStateDAO.class);
+		return gameStateDAO.getScoreForThePlayerByGame(playerId, simId);
 	}
 	
 }
