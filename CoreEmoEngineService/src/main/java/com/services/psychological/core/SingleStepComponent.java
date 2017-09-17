@@ -283,7 +283,7 @@ public class SingleStepComponent {
 	}
 	
 	public void invokeEmotions() {
-		List<EventTab> events = eventDAO.getEventsForAgentBySimIdUserIdAndIter(constVars.getSimId(), constVars.getUserID(), currIter, agentId);
+		List<EventTab> events = eventDAO.getEventsForAgentBySimIdUserIdAndIter(constVars.getSimId(), constVars.getUserId(), currIter, agentId);
 		//Invoking Event and Agent related emotions
 		for (EventTab event : events) {
 			individualAgent.setAgentID(agentId);
@@ -295,7 +295,7 @@ public class SingleStepComponent {
 			individualAgent.individualEmotionsInvocation();
 		}
 		
-		List<ObjectTab> objects = objectDAO.getObjectsForAgentByIterUserAndSimId(currIter, agentId, constVars.getUserID(), constVars.getSimId());
+		List<ObjectTab> objects = objectDAO.getObjectsForAgentByIterUserAndSimId(currIter, agentId, constVars.getUserId(), constVars.getSimId());
 		//Invoke object related emotions
 		for (ObjectTab object : objects) {
 			individualAgent.setAgentID(agentId);
@@ -335,7 +335,7 @@ public class SingleStepComponent {
 						keyVal, colName);
 			} else if (tableName.equals("agent_tab")) {
 				agentDAO = (AgentTabDAO)context.getBean(AgentTabDAO.class);
-				agent = agentDAO.getAgentByUserIdSimIdAgentIdAndIter(constVars.getUserID(), constVars.getSimId(), sourceAgent, currIter);
+				agent = agentDAO.getAgentByUserIdSimIdAgentIdAndIter(constVars.getUserId(), constVars.getSimId(), sourceAgent, currIter);
 				if (null == agent) {
 					agent = new AgentTab();	
 				}
@@ -343,7 +343,7 @@ public class SingleStepComponent {
 						new AgentTabSpecs(agent), keyVal, colName);
 			} else if (tableName.equals("emo_attitudes")) {
 				emoAttsDAO = (EmotionalAttitudesDAO)context.getBean(EmotionalAttitudesDAO.class);
-				emoAtts = emoAttsDAO.getEmoAttByIterAgentEmotionsUserIdAndSimId(sourceAgent, constVars.getUserID(), currIter, constVars.getSimId(), targetEmotion);
+				emoAtts = emoAttsDAO.getEmoAttByIterAgentEmotionsUserIdAndSimId(sourceAgent, constVars.getUserId(), currIter, constVars.getSimId(), targetEmotion);
 				if (null == emoAtts) {
 					emoAtts = new EmotionalAttitudes();	
 					emoAtts.setOccurredCnt(0l);
@@ -353,7 +353,7 @@ public class SingleStepComponent {
 						new EmotionalAttitudesSpecs(emoAtts), keyVal, colName);
 			} else if (tableName.equals("event_tab")) {
 				eventDAO = (EventTabDAO)context.getBean(EventTabDAO.class);
-				event = eventDAO.getEventsBySimIdUserIdIterEventAndAgent(constVars.getSimId(), constVars.getUserID(), currIter, targetEvent, sourceAgent);
+				event = eventDAO.getEventsBySimIdUserIdIterEventAndAgent(constVars.getSimId(), constVars.getUserId(), currIter, targetEvent, sourceAgent);
 				if (null == event) {
 					event = new EventTab();	
 				}
@@ -362,7 +362,7 @@ public class SingleStepComponent {
 			} else if (tableName.equals("interaction_attitudes")) {
 				interactAttsDAO = (InteractionAttitudesDAO)context.getBean(InteractionAttitudesDAO.class);
 				interactAtts = interactAttsDAO.getUniqueInteractionAttitudes(currIter, sourceAgent, targetAgent, targetVariable, thirdPerson, 
-						targetEvent, targetObject, targetEmotion, constVars.getUserID(), constVars.getSimId());
+						targetEvent, targetObject, targetEmotion, constVars.getUserId(), constVars.getSimId());
 				if (null == interactAtts) {
 					interactAtts = new InteractionAttitudes();	
 				}
@@ -371,7 +371,7 @@ public class SingleStepComponent {
 								interactAtts), keyVal, colName);
 			} else if (tableName.equals("object_tab")) {
 				objectDAO = (ObjectTabDAO)context.getBean(ObjectTabDAO.class);
-				object = objectDAO.getObjectByIterObjectIdAgentUserAndSimId(currIter, targetObject, sourceAgent, constVars.getUserID(), constVars.getSimId());
+				object = objectDAO.getObjectByIterObjectIdAgentUserAndSimId(currIter, targetObject, sourceAgent, constVars.getUserId(), constVars.getSimId());
 				if (null == object) {
 					object = new ObjectTab();	
 				}
