@@ -9,9 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Proxy;
+
 @SuppressWarnings("serial")
 @Entity
 @Table(name="game_statements")
+@Proxy(lazy=false)
 public class GameStatements implements Serializable {
 	
 	@Id

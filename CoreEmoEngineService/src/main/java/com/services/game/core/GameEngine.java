@@ -7,6 +7,7 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.services.dao.ObservedEmotionsDAO;
 import com.services.dao.game.GamePlayerStatementsDAO;
@@ -24,6 +25,7 @@ import com.services.game.enums.AgentNames;
 import com.services.game.enums.Emotions;
 
 @Component
+@Transactional
 public class GameEngine {
 	
 	@Autowired
@@ -53,7 +55,6 @@ public class GameEngine {
 		
 	}
 	
-	
 	public void generateQuestionsForGame(Long simId, String userId) {
 		ObservedEmotionsDAO observedEmotionsDAO = (ObservedEmotionsDAO)context.getBean(ObservedEmotionsDAO.class);
 		List<ObservedEmotions> observedEmotions = observedEmotionsDAO.getObsEmosByUserSimId(userId, simId); 
@@ -63,12 +64,12 @@ public class GameEngine {
 			
 			if (observedEmotion.getEmoIntensity() > 0) {
 				
-				GameQa gameQa = buildQuestion("The emotion felt by agent " + AgentNames.getAgentNameById(observedEmotion.getAgentId()) + " during the period " + observedEmotion.getIterNo() + "was : ",
+				GameQa gameQa = buildQuestion("The emotion felt by agent " + AgentNames.getAgentNameById(observedEmotion.getAgentId()) + " during the period " + observedEmotion.getIterNo() + " was : ",
 						observedEmotion, simId, userId);
 				gameQuestions.add(gameQa);
 				
 			} else if (observedEmotion.getEmoPot() > 0) {
-				GameQa gameQa = buildQuestion("The potential to feel emotion by agent " + AgentNames.getAgentNameById(observedEmotion.getAgentId()) + " during the period " + observedEmotion.getIterNo() + "was : ",
+				GameQa gameQa = buildQuestion("The potential to feel emotion by agent " + AgentNames.getAgentNameById(observedEmotion.getAgentId()) + " during the period " + observedEmotion.getIterNo() + " was : ",
 						observedEmotion, simId, userId);
 				gameQuestions.add(gameQa);
 			}
@@ -205,7 +206,7 @@ public class GameEngine {
 		
 		GameQa unaskedQuestion = null;
 		do {
-			unaskedQuestion = gameQuestions.get(random.nextInt(gameStateQuestions.size()));
+			unaskedQuestion = gameQuestions.get(random.nextInt(gameQuestions.size()));
 		}while (isQuestionAlreadyAsked(unaskedQuestion, gameStateQuestions));
 		
 		return unaskedQuestion;
@@ -241,6 +242,46 @@ public class GameEngine {
 	public Long getScoreForThePlayerByGame(String playerId, Long simId) {
 		GameQaStateDAO gameStateDAO = (GameQaStateDAO)context.getBean(GameQaStateDAO.class);
 		return gameStateDAO.getScoreForThePlayerByGame(playerId, simId);
+	}
+	
+	public List<StatementToPost> getStatementsHistoryForPlayerByGame(String playerId, Long simId) {
+		GamePlayerStatementsDAO gamePlayerStatementsDAO = (GamePlayerStatementsDAO)context.getBean(GamePlayerStatementsDAO.class);
+		List<GamePlayerStatements> gamePlayerStatements = gamePlayerStatementsDAO.getPresentedStatementsForPlayerByGame(playerId, simId);
+		List<StatementToPost> postedStatements = new ArrayList<StatementToPost>();
+		
+		GameStatementsDAO gameStatementDAO = (GameStatementsDAO)context.getBean(GameStatementsDAO.class);
+		for(GamePlayerStatements gamePlayerStatement : gamePlayerStatements) {
+			GameStatements gameStatement = gameStatementDAO.getOne(gamePlayerStatement.getStatementId());
+			StatementToPost postedStatement = new StatementToPost();
+			postedStatement.setAgentId(gamePlayerStatement.getAgentId());
+			postedStatement.setIterNo(gamePlayerStatement.getIterNo());
+			postedStatement.setStatement(gameStatement.getStatement());
+			postedStatement.setSimId(simId);
+			postedStatement.setPlayerId(playerId); 
+			postedStatement.setStatementId(gamePlayerStatement.getStatementId());
+			postedStatements.add(postedStatement);
+		}
+		return postedStatements;
+	}
+	
+	public List<QuestionToPost> getQuestionsHistoryForPlayerByGame(String playerId, Long simId) {
+		GameQaDAO gameQaDAO = (GameQaDAO)context.getBean(GameQaDAO.class);
+		GameQaStateDAO gameStateDAO = (GameQaStateDAO)context.getBean(GameQaStateDAO.class);
+		List<GameQaState> gameStateQuestions = gameStateDAO.getAskedQuestionsByPlayerAndSimId(playerId, simId);
+		List<QuestionToPost> askedQuestions = new ArrayList<QuestionToPost>();
+		
+		for(GameQaState gameQaQueston : gameStateQuestions) {
+			GameQa askedQuestion = gameQaDAO.getOne(gameQaQueston.getQaId());
+			String options = askedQuestion.getOptionOne() + "," + askedQuestion.getOptionTwo() + "," + askedQuestion.getOptionThree() + "," + askedQuestion.getOptionFour() + ","
+					+ askedQuestion.getOptionNone();
+			QuestionToPost postedQuestion = new QuestionToPost();
+			postedQuestion.setQuestion(askedQuestion.getQuestion());
+			postedQuestion.setOptions(options);
+			postedQuestion.setQaStateId(gameQaQueston.getId());
+			postedQuestion.setSelectedAnswer(gameQaQueston.getSelectedAnswer()); 
+			askedQuestions.add(postedQuestion);
+		}
+		return askedQuestions;
 	}
 	
 }

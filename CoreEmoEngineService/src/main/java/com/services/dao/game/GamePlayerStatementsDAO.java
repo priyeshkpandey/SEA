@@ -19,4 +19,7 @@ public interface GamePlayerStatementsDAO extends JpaRepository<GamePlayerStateme
 	@Query("select count(gps.id) from GamePlayerStatements gps where gps.playerId = :playerId AND gps.simId = :simId  AND gps.isAlreadyPresented = 1") 
 	public Long getCountOfPresentedStatementsForGameByPlayer(@Param("playerId") String playerId, @Param("simId") Long simId);
 	
+	@Query("from GamePlayerStatements gps where gps.playerId = :playerId AND gps.simId = :simId AND gps.isAlreadyPresented = 1")
+	public List<GamePlayerStatements> getPresentedStatementsForPlayerByGame(@Param("playerId") String playerId, @Param("simId") Long simId);
+	
 }

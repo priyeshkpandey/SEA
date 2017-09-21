@@ -12,12 +12,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Proxy;
+
 import com.services.game.enums.RangeConverter;
 import com.services.game.enums.ValueRanges;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name="game_vocabulary")
+@Proxy(lazy=false)
 public class GameVocabulary implements Serializable {
 	
 	@Id

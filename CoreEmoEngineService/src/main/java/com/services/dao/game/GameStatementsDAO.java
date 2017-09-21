@@ -10,7 +10,7 @@ import com.services.entities.game.GameStatements;
 
 public interface GameStatementsDAO extends JpaRepository<GameStatements, Long> {
 	
-	@Query("from GameStatement gs where gs.simId = :simId AND gs.userId = :userId") 
+	@Query("from GameStatements gs where gs.simId = :simId AND gs.userId = :userId") 
 	public List<GameStatements> getStatementForGameByUserId(@Param("simId") Long simId, @Param("userId") String userId);
 
 }

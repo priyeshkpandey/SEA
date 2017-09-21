@@ -1,9 +1,12 @@
 package com.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,8 +48,18 @@ public class GameController {
 	}
 	
 	@RequestMapping(value = "/score", method = RequestMethod.GET)
-	public @ResponseBody Long getScoreForThePlayerByGame(@RequestBody GamePlayerRequest gamePlayerRequest) {
-		return gameEngine.getScoreForThePlayerByGame(gamePlayerRequest.getPlayerId(), gamePlayerRequest.getSimId());
+	public @ResponseBody Long getScoreForThePlayerByGame(@RequestParam(value = "playerId") String playerId, @RequestParam(value = "simId") Long simId) {
+		return gameEngine.getScoreForThePlayerByGame(playerId, simId);
+	}
+	
+	@RequestMapping(value = "/history/statements", method = RequestMethod.GET)
+	public @ResponseBody List<StatementToPost> getStatementsHistoryForPlayerByGame(@RequestParam(value = "playerId") String playerId, @RequestParam(value = "simId") Long simId) {
+		return gameEngine.getStatementsHistoryForPlayerByGame(playerId, simId);
+	}
+	
+	@RequestMapping(value = "/history/questions", method = RequestMethod.GET)
+	public @ResponseBody List<QuestionToPost> getQuestionsHistoryForPlayerByGame(@RequestParam(value = "playerId") String playerId, @RequestParam(value = "simId") Long simId) {
+		return gameEngine.getQuestionsHistoryForPlayerByGame(playerId, simId);
 	}
 
 }

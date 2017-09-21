@@ -22,7 +22,7 @@ public enum Emotions {
 	public static String getRandomEmotionExcept(List<String> emotions) {
 		String returnedEmotion = emotions.get(0);
 		while(emotions.contains(returnedEmotion)) {
-			returnedEmotion = Emotions.values()[random.nextInt(Emotions.values().length)].name();
+			returnedEmotion = Emotions.values()[random.nextInt(Emotions.values().length)].getEmotion();
 			if (!emotions.contains(returnedEmotion)) {
 				return returnedEmotion;
 			}
