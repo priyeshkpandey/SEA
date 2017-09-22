@@ -4,7 +4,7 @@ public class StatementToPost {
 	Long simId;
 	Long iterNo;
 	String playerId;
-	Long agentId;
+	String agentId;
 	Long statementId;
 	String statement;
 	
@@ -26,10 +26,10 @@ public class StatementToPost {
 	public void setPlayerId(String playerId) {
 		this.playerId = playerId;
 	}
-	public Long getAgentId() {
+	public String getAgentId() {
 		return agentId;
 	}
-	public void setAgentId(Long agentId) {
+	public void setAgentId(String agentId) {
 		this.agentId = agentId;
 	}
 	public Long getStatementId() {

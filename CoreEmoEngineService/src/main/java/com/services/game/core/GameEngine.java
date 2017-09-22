@@ -154,7 +154,7 @@ public class GameEngine {
 		GameStatements gameStatement = gameStatementDAO.getOne(statementToPresent.getStatementId());
 		
 		StatementToPost statementToPost = new StatementToPost();
-		statementToPost.setAgentId(statementToPresent.getAgentId());
+		statementToPost.setAgentId(AgentNames.getAgentNameById(statementToPresent.getAgentId()));
 		statementToPost.setIterNo(statementToPresent.getIterNo());
 		statementToPost.setStatement(gameStatement.getStatement());
 		statementToPost.setSimId(simId);
@@ -253,7 +253,7 @@ public class GameEngine {
 		for(GamePlayerStatements gamePlayerStatement : gamePlayerStatements) {
 			GameStatements gameStatement = gameStatementDAO.getOne(gamePlayerStatement.getStatementId());
 			StatementToPost postedStatement = new StatementToPost();
-			postedStatement.setAgentId(gamePlayerStatement.getAgentId());
+			postedStatement.setAgentId(AgentNames.getAgentNameById(gamePlayerStatement.getAgentId()));
 			postedStatement.setIterNo(gamePlayerStatement.getIterNo());
 			postedStatement.setStatement(gameStatement.getStatement());
 			postedStatement.setSimId(simId);
