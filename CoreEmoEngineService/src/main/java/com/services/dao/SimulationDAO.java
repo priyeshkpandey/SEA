@@ -20,6 +20,7 @@ public interface SimulationDAO extends JpaRepository<Simulation, Long>, JpaSpeci
 			@Param("userId") String userId,
 			@Param("simId") Long simId);
 	
-	
+	@Query("from Simulation sim where sim.simName = :simName")
+	public Simulation getSimulationByName(@Param("simName") String simName);
 
 }
