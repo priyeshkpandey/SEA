@@ -1,5 +1,6 @@
 package com.services;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -71,8 +71,8 @@ public class GameViewController {
 	}
 	
 	
-	@RequestMapping(value = "/play/{simName}/{playerId}", method = RequestMethod.GET)
-	public String playGame(@PathVariable("playerId") String playerId, @PathVariable("simName") String simName, ModelMap model) {
+	@RequestMapping(value = "/play", method = RequestMethod.GET)
+	public String playGame(@RequestParam("playerId") String playerId, @RequestParam("simName") String simName, ModelMap model) throws UnsupportedEncodingException {
 		SimulationDAO simDAO = context.getBean(SimulationDAO.class);
 		Simulation sim = simDAO.getSimulationByName(simName);
 		Long simId = sim.getSimId();

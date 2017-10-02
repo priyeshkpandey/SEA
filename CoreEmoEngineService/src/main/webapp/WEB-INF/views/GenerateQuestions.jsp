@@ -31,7 +31,7 @@
 			</div>
 		</div>
 
-		<form method="post" action="/game/view/init">
+		<form method="post" action="/CoreEmoEngineService/game/view/init">
 			<div class="row">
 
 				<div class="col-sm-6 col-md-6 col-lg-6">

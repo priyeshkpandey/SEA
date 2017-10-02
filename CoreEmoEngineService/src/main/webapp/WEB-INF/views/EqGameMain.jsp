@@ -17,7 +17,7 @@
 <body>
 <br/><br/><br/><br/><br/>
 	<div class="container-fluid">
-		<form method = "post" action = "/game/view/open">
+		<form method = "post" action = "/CoreEmoEngineService/game/view/open">
 			<div class="row">
 				<div class="col-sm-4 col-md-4 col-lg-4">
 					Enter Email : <input type="text" name="playerId">

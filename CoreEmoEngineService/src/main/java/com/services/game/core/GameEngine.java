@@ -57,27 +57,32 @@ public class GameEngine {
 	
 	public void generateQuestionsForGame(Long simId, String userId) {
 		ObservedEmotionsDAO observedEmotionsDAO = (ObservedEmotionsDAO)context.getBean(ObservedEmotionsDAO.class);
+		GameQaDAO gameQaDAO = (GameQaDAO)context.getBean(GameQaDAO.class);
 		List<ObservedEmotions> observedEmotions = observedEmotionsDAO.getObsEmosByUserSimId(userId, simId); 
 		List<GameQa> gameQuestions = new ArrayList<GameQa>();
 		
-		for(ObservedEmotions observedEmotion : observedEmotions) {
-			
-			if (observedEmotion.getEmoIntensity() > 0) {
+		List<GameQa> existingGame = gameQaDAO.getGamesBySimId(simId);
+		
+		if (existingGame.isEmpty()) {
+			for(ObservedEmotions observedEmotion : observedEmotions) {
 				
-				GameQa gameQa = buildQuestion("The emotion felt by agent " + AgentNames.getAgentNameById(observedEmotion.getAgentId()) + " during the period " + observedEmotion.getIterNo() + " was : ",
-						observedEmotion, simId, userId);
-				gameQuestions.add(gameQa);
+				if (observedEmotion.getEmoIntensity() > 0) {
+					
+					GameQa gameQa = buildQuestion("The emotion felt by agent " + AgentNames.getAgentNameById(observedEmotion.getAgentId()) + " during the period " + observedEmotion.getIterNo() + " was : ",
+							observedEmotion, simId, userId);
+					gameQuestions.add(gameQa);
+					
+				} else if (observedEmotion.getEmoPot() > 0) {
+					GameQa gameQa = buildQuestion("The potential to feel emotion by agent " + AgentNames.getAgentNameById(observedEmotion.getAgentId()) + " during the period " + observedEmotion.getIterNo() + " was : ",
+							observedEmotion, simId, userId);
+					gameQuestions.add(gameQa);
+				}
 				
-			} else if (observedEmotion.getEmoPot() > 0) {
-				GameQa gameQa = buildQuestion("The potential to feel emotion by agent " + AgentNames.getAgentNameById(observedEmotion.getAgentId()) + " during the period " + observedEmotion.getIterNo() + " was : ",
-						observedEmotion, simId, userId);
-				gameQuestions.add(gameQa);
 			}
-			
+			gameQaDAO.save(gameQuestions);
 		}
 		
-		GameQaDAO gameQaDAO = (GameQaDAO)context.getBean(GameQaDAO.class);
-		gameQaDAO.save(gameQuestions);
+		
 		
 	}
 	

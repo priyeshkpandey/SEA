@@ -18,28 +18,44 @@
 
 	<div class="container-fluid">
 
-		<h6>
-			<span class="label label-info">Game Selected: ${simName}</span> <br />
-			<span class="label label-info">Player: ${playerId}</span> 
-			<span class="label label-info">Duration Range: 0 to ${maxIter}</span>
-		</h6>
-
-		<div class="form-group">
-			<label for="statements">Statements:</label>
-			<textarea readonly class="form-control" rows="10" id="statements">${statements}</textarea>
-			<label for="iteration">Enter duration for which to get statement:</label>
-			<input type="text" id="iteration">
-			<input type="button" value="Get Statement"
-						onclick="getStatement(document.getElementById('iteration').value);  ">
-			<input type="button" value="Get Score" onclick="getScore();">
+		<div class="row">
+			<div class="col-sm-4 col-md-4 col-lg-4">
+				<h6>
+					<span class="label label-info">Game Selected: ${simName}</span>
+				</h6>
+			</div>
+			<div class="col-sm-4 col-md-4 col-lg-4">
+				<h6>
+					<span class="label label-info">Player: ${playerId}</span>
+				</h6>
+			</div>
+			<div class="col-sm-4 col-md-4 col-lg-4">
+				<h6>
+					<span class="label label-info">Duration Range: 0 to
+						${maxIter}</span>
+				</h6>
+			</div>
 		</div>
-		
-		<form method="post" action="/game/view/question">
-			<div class="row">
 
+
+		<div class="row">
+			<div class="col-sm-12 col-md-12 col-lg-12">
+				<div class="form-group">
+					<label for="statements">Statements:</label>
+					<textarea readonly class="form-control" rows="10" id="statements">${statements}</textarea>
+					<label for="iteration">Enter duration for which to get
+						statement:</label> <input type="text" id="iteration"> <input
+						type="button" value="Get Statement"
+						onclick="getStatement(document.getElementById('iteration').value);  ">
+				</div>
+			</div>
+		</div>
+
+		<form method="post" action="/CoreEmoEngineService/game/view/question">
+			<div class="row">
 				<div class="col-sm-6 col-md-6 col-lg-6">
-					<input type="hidden" name="simName" value="${simName}" /> 
-					<input type="hidden" name="playerId" value="${playerId}" />
+					<input type="hidden" name="simName" value="${simName}" /> <input
+						type="hidden" name="playerId" value="${playerId}" />
 				</div>
 				<div class="col-sm-6 col-md-6 col-lg-6">
 					<input type="submit" value="Attempt Question"
@@ -48,10 +64,10 @@
 
 			</div>
 		</form>
-
+        <input type="button" value="Get Score" onclick="getScore();"/>
 	</div>
 
-<script type="text/javascript">
+	<script type="text/javascript">
 function getStatement(iterNo) {
 	$.ajax({
 	    contentType: 'application/json',
@@ -70,16 +86,16 @@ function getStatement(iterNo) {
 	        alert("Getting statement failed");
 	    },
 	    type: 'POST',
-	    url: '/game/post/statement'
+	    url: '/CoreEmoEngineService/game/post/statement'
 	});
 }
 
 function getScore() {
 	$.ajax({
-	    url: '/game/score?playerId=${playerId}&simId=${simId}',
+	    url: '/CoreEmoEngineService/game/score?playerId=${playerId}&simId=${simId}',
 	    type: 'GET',
 	    success: function (score) {
-	      return score;
+	      alert("Your score till now is: " + score);
 	    },
 	    error: function () {
 	      alert("Error getting score");

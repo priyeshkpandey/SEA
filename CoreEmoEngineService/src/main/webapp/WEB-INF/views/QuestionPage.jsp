@@ -44,7 +44,7 @@
 				onclick="alertAnswerResult(getTheSelectedAnswer()); this.disabled=true; this.value='Submitting answer…'; ">
 		</form>
 
-		<form method="post" action="/play/${simName}/${playerId}">
+		<form method="get" action="/CoreEmoEngineService/game/view/play">
 			<div class="row">
 
 				<div class="col-sm-6 col-md-6 col-lg-6">
@@ -79,7 +79,7 @@ function alertAnswerResult(selectedAnswer) {
 	        app.log("Validating answer failed");
 	    },
 	    type: 'POST',
-	    url: '/game/answer'
+	    url: '/CoreEmoEngineService/game/answer'
 	});
 }
 
