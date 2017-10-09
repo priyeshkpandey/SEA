@@ -173,7 +173,7 @@ public class GameEngine {
 		
 	}
 	
-	public QuestionToPost postQuestionForPlayer(String playerId, Long simId) {
+	public QuestionToPost postQuestionForPlayer(String playerId, Long simId) throws Exception {
 		
 		GameQaDAO gameQaDAO = (GameQaDAO)context.getBean(GameQaDAO.class);
 		GameQaStateDAO gameStateDAO = (GameQaStateDAO)context.getBean(GameQaStateDAO.class);
@@ -207,12 +207,19 @@ public class GameEngine {
 		
 	}
 	
-	private GameQa getUnaskedQuestion(List<GameQa> gameQuestions, List<GameQaState> gameStateQuestions) {
+	private GameQa getUnaskedQuestion(List<GameQa> gameQuestions, List<GameQaState> gameStateQuestions) throws Exception {
 		
 		GameQa unaskedQuestion = null;
+		int totalQuestions = gameQuestions.size();
+		int questionAttemptCounter = 0;
 		do {
 			unaskedQuestion = gameQuestions.get(random.nextInt(gameQuestions.size()));
-		}while (isQuestionAlreadyAsked(unaskedQuestion, gameStateQuestions));
+			questionAttemptCounter++;
+		}while (isQuestionAlreadyAsked(unaskedQuestion, gameStateQuestions) && questionAttemptCounter < totalQuestions);
+		
+		if (questionAttemptCounter == totalQuestions) {
+			throw new Exception("No more questions remaining");
+		}
 		
 		return unaskedQuestion;
 	}
@@ -220,7 +227,7 @@ public class GameEngine {
 	private Boolean isQuestionAlreadyAsked(GameQa gameQa, List<GameQaState> gameStateQuestions) {
 		
 		for(GameQaState askedQuestion : gameStateQuestions) {
-			if (askedQuestion.getQaId() == gameQa.getId()) {
+			if (askedQuestion.getQaId() == gameQa.getId() && askedQuestion.getSelectedAnswer() != null) {
 				return true;
 			}
 		}

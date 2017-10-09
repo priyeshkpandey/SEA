@@ -38,7 +38,7 @@ public class GameController {
 	}
 	
 	@RequestMapping(value = "/post/question", method = RequestMethod.POST)
-	public @ResponseBody QuestionToPost postQuestionForPlayer(@RequestBody GamePlayerRequest gamePlayerRequest) {
+	public @ResponseBody QuestionToPost postQuestionForPlayer(@RequestBody GamePlayerRequest gamePlayerRequest) throws Exception {
 		return gameEngine.postQuestionForPlayer(gamePlayerRequest.getPlayerId(), gamePlayerRequest.getSimId());
 	}
 	

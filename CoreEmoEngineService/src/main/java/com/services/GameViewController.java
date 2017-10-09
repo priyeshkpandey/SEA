@@ -95,7 +95,7 @@ public class GameViewController {
 	}
 	
 	@RequestMapping(value = "/question", method = RequestMethod.POST)
-	public String openQuestionPage(@RequestParam("playerId") String playerId, @RequestParam("simName") String simName, ModelMap model) {
+	public String openQuestionPage(@RequestParam("playerId") String playerId, @RequestParam("simName") String simName, ModelMap model) throws Exception {
 		SimulationDAO simDAO = context.getBean(SimulationDAO.class);
 		Simulation sim = simDAO.getSimulationByName(simName);
 		QuestionToPost question = gameEngine.postQuestionForPlayer(playerId, sim.getSimId());
