@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "rugged-matrix-183319",
+  "private_key_id": "f835c08a5cf3811cee0d66746a3b31aab7b969b2",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDiS58lKN0eTi1/\nwfVNJAMtSNIa5O4bWxlSGWJ6ZnLqH+893vGFmYLpfCRsgnk9K7D1vljBxjc3l+w2\ncI8Nyn5UNSeqXVZl0PmU1bVAdE88FRYbtp51o6zEQGdUUeb8Vw2pMJ7rlQSy14Lz\ndoCnNqPfajEQLKOLGfTUqlVoYPD8tiT7E2RPwPWQHbWFtzHfBnyH0d5UgMfBcYcg\nCGxIejC5MgFrO6HPVyYu8HsQMPEvEA9gmiVmXOrG04eapaXH+kptrmPa7Jv5Wbwr\nlcTHisZYt9/2C8nHXsuhU/ckaKM6wujMkUxp9B2mYIc66FfcOHbSmHfmdbVWh10X\nR0ahJlL9AgMBAAECggEAF0NpZp9LDfbA+CmHD2lUl0btbHzc2nyUv4sjA8y84wMp\n680bvJ2BpwGPWAVYs9hmPnkVNERtgD5Stuz+087dikgVng6u11QymCGZGrlqPNW5\nGlu9cgADvoAVb0ZlLctAOQSpzbOZ0k3T5TXpN2dnVMwco5pHLMFcGTGyioKuu3fH\niPr2kQZAZNlbuS9Q/5+uabWcHoj6C6hevSKTe6pkJ+KKdLwk8zOAiCJkLIIfm33l\nX31Py4cregOf7T17smskIe/8DST1jEvRy1CIRzKNOBEXkg5MyEgqlCxzyHQPUJTs\nSqJBNzSqmEj+fIzyjp7vJ3dwnjKurihoOtFBCkTqsQKBgQD+Wut10TicJPvpYhed\nQAM1mgm2Bxf9cjBdJrWoMRBgxNb8gOcDTNNtjSROTVWWjN3rUzPljMCH88Ww2Qe6\nqfPMadcCJFgq7QpExTJWZEkt653ai+ZihWbk3nXFw3z4Y65VbZ2cIMyShOlZOKwP\nRNku56r8bITnQ5ex+8KzViGzbQKBgQDjwj/eTsbDfDitxJITLLzFXF+Q1ooVK2Dg\ngVL4cW9Fk01Mb3/Je0mMIawX1Aeu9xBH0AHR939WLHfiGpA7bd1bmHlxOvkSOYEU\nFn7OFe/4U+9y8ma6QEUZWgplNgby8eXQl7Cx5IWkknBW3TMhq2gkl9UmreGvv5W9\n2c+bc8DT0QKBgBYCehOE2jgwvxev5Ek4K87smGCG9p14zxSQb/Gw5TDqd4v7/4F6\nmWUGbJjV+kz/vYhKd9gqONLK1lV6Qj/1yuHqWq+Vw4dbYaMXyUZOgUKW+97YckQe\nNQwi7+AADYVU4tYDmTrUX79h/us4izL7CywS4enb3hhA8hR1q6BnGJ11AoGAI8AG\n5G87Fc4221fCkg3wp44DVinGzOHdOAA0tNihXatsc7YAufCHL97NM4RNnHIddRg6\nYOnXbABY5P3Ea/+nwkvhrBtUoz6xeyS4zMJ2w2TxbfqMk2mpLvyKKy7a0mGT8DUP\nQC0dqSJvTcM01nEgTLYkeAjNJxgMehtpUf5OYzECgYEA5ODTqUq6Wkoct8fqhOCp\nsHSfYSZVmGaUy7pffm7ACknac7GDuOLcvCS3JSmust4vR1q6z9zW0rlI1KjzJ2iS\nrqM5zor7VUXm5NxnxFuE1H9uvYww2QHy5kxyXiB+d8+V3V2YvcofSwHtXyLi3nyI\nqPYRWYjTwlUipc41AtzutFQ=\n-----END PRIVATE KEY-----\n",
+  "client_email": "emoengine@rugged-matrix-183319.iam.gserviceaccount.com",
+  "client_id": "115141640485344645732",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/emoengine%40rugged-matrix-183319.iam.gserviceaccount.com"
+}

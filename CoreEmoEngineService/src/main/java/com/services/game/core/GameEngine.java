@@ -67,14 +67,12 @@ public class GameEngine {
 			for(ObservedEmotions observedEmotion : observedEmotions) {
 				
 				if (observedEmotion.getEmoIntensity() > 0) {
-					
-					GameQa gameQa = buildQuestion("The emotion felt by agent " + AgentNames.getAgentNameById(observedEmotion.getAgentId()) + " during the period " + observedEmotion.getIterNo() + " was : ",
-							observedEmotion, simId, userId);
+					String question = String.format("%s felt this emotion during %s", AgentNames.getAgentNameById(observedEmotion.getAgentId()), observedEmotion.getIterNo());
+					GameQa gameQa = buildQuestion(question, observedEmotion, simId, userId);
 					gameQuestions.add(gameQa);
-					
 				} else if (observedEmotion.getEmoPot() > 0) {
-					GameQa gameQa = buildQuestion("The potential to feel emotion by agent " + AgentNames.getAgentNameById(observedEmotion.getAgentId()) + " during the period " + observedEmotion.getIterNo() + " was : ",
-							observedEmotion, simId, userId);
+					String question = String.format("%s had potential to feel this emotion during %s", AgentNames.getAgentNameById(observedEmotion.getAgentId()), observedEmotion.getIterNo());
+					GameQa gameQa = buildQuestion(question, observedEmotion, simId, userId);
 					gameQuestions.add(gameQa);
 				}
 				

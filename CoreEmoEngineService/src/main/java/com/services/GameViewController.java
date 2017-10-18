@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.services.dao.SimulationDAO;
+import com.services.dao.game.GamePlayerDAO;
 import com.services.entities.Simulation;
+import com.services.entities.game.GamePlayer;
 import com.services.entities.game.QuestionToPost;
 import com.services.entities.game.StatementToPost;
 import com.services.game.core.GameEngine;
@@ -22,10 +24,12 @@ import com.services.game.core.GameEngine;
 @RequestMapping("/game/view")
 public class GameViewController {
 	
+	private static final String LANDING_PAGE = "LandingPage";
 	private static final String HOME_PAGE = "EqGameMain";
 	private static final String QUESTION_PAGE = "QuestionPage";
 	private static final String GENERATE_QUESTIONS = "GenerateQuestions";
 	private static final String PLAY_GAME = "PlayGame";
+	private static final String EXISTING_PLAYER = "ExistingPlayer";
 	private static final String GENERATOR_USER_ID = "pr0001";
 	
 	@Autowired
@@ -33,6 +37,17 @@ public class GameViewController {
 	
 	@Autowired
 	GameEngine gameEngine;
+	
+	@RequestMapping(value = "/landing", method = RequestMethod.GET)
+	public String openLandingPage(ModelMap model) {
+		String gameDescription = "You can improve your EQ (Emotional Quotient) by this game. You will see a scenario. You will not see complete scenario immediately."
+				+ " You can see the scenario gradually. Many statements were made by each and every person. These statements were told during different time periods."
+				+ " These statements reveal information about their emotional state. You can see whatever number of statements."
+				+ " At any time you can attempt a question. The question would be about emotional state of the persons. The score for a correct answer will reduce by seeing more statements."
+				+ " Welcome to the rigorous excercise of the emotions!";
+		model.addAttribute("description", gameDescription);
+		return LANDING_PAGE;
+	}
 	
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String openHomePage(ModelMap model) {
@@ -50,6 +65,11 @@ public class GameViewController {
 	public String generateGameAndOpen(@RequestParam("playerId") String playerId, @RequestParam("simName") String simName, ModelMap model) {
 		SimulationDAO simDAO = context.getBean(SimulationDAO.class);
 		Simulation sim = simDAO.getSimulationByName(simName);
+		GamePlayerDAO gamePlayerDAO = context.getBean(GamePlayerDAO.class);
+		GamePlayer gamePlayer = new GamePlayer();
+		gamePlayer.setPlayerId(playerId); 
+		gamePlayerDAO.save(gamePlayer);
+		
 		gameEngine.generateGameForPlayer(sim.getSimId(), GENERATOR_USER_ID, playerId); 
 		model.addAttribute("simName", simName);
 		model.addAttribute("playerId", playerId);
@@ -70,6 +90,24 @@ public class GameViewController {
 		return PLAY_GAME;
 	}
 	
+	@RequestMapping(value = "/existing", method = RequestMethod.GET)
+	public String existingPlayerPage(ModelMap model) {
+		SimulationDAO simDAO = context.getBean(SimulationDAO.class);
+		List<Simulation> response = simDAO.getSimulationsByUser(GENERATOR_USER_ID);
+		List<String> games = new ArrayList<String>();
+		for (Simulation sim : response) {
+			games.add(sim.getSimName());
+		}
+		GamePlayerDAO gamePlayerDAO = context.getBean(GamePlayerDAO.class);
+		List<GamePlayer> playersResponse = gamePlayerDAO.findAll();
+		List<String> players = new ArrayList<String>();
+		for (GamePlayer player : playersResponse) {
+			players.add(player.getPlayerId());
+		}
+		model.addAttribute("players", players);
+		model.addAttribute("games", games);
+		return EXISTING_PLAYER;
+	}
 	
 	@RequestMapping(value = "/play", method = RequestMethod.GET)
 	public String playGame(@RequestParam("playerId") String playerId, @RequestParam("simName") String simName, ModelMap model) throws UnsupportedEncodingException {

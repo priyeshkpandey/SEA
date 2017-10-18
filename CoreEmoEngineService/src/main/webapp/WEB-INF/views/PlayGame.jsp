@@ -16,7 +16,7 @@
 </head>
 <body>
 
-	<div class="container-fluid">
+	<div class="container-fluid" id="google_translate_element">
 
 		<div class="row">
 			<div class="col-sm-4 col-md-4 col-lg-4">
@@ -31,7 +31,7 @@
 			</div>
 			<div class="col-sm-4 col-md-4 col-lg-4">
 				<h6>
-					<span class="label label-info">Duration Range: 0 to
+					<span class="label label-info">Duration Range: From 0 to
 						${maxIter}</span>
 				</h6>
 			</div>
@@ -43,7 +43,7 @@
 				<div class="form-group">
 					<label for="statements">Statements:</label>
 					<textarea readonly class="form-control" rows="10" id="statements">${statements}</textarea>
-					<label for="iteration">Enter duration for which to get
+					<label for="iteration">Enter duration to get a
 						statement:</label> <input type="text" id="iteration"> <input
 						type="button" value="Get Statement"
 						onclick="getStatement(document.getElementById('iteration').value);  ">
@@ -104,6 +104,17 @@ function getScore() {
 }
 
 </script>
+
+<script type="text/javascript">
+		function googleTranslateElementInit() {
+			new google.translate.TranslateElement({
+				pageLanguage : 'en'
+			}, 'google_translate_element');
+		}
+	</script>
+
+	<script type="text/javascript"
+		src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 </body>
 </html>

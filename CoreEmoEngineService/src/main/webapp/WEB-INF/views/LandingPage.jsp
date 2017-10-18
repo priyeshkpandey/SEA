@@ -3,7 +3,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<title>The EQ Game</title>
+<title>Game Selection</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet"
@@ -15,28 +15,27 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 </head>
 <body>
-<br/><br/><br/><br/><br/>
+
 	<div class="container-fluid" id="google_translate_element">
-		<form method = "post" action = "/CoreEmoEngineService/game/view/open">
-			<div class="row">
-				<div class="col-sm-4 col-md-4 col-lg-4">
-					Enter Email : <input type="text" name="playerId">
-				</div>
-				<div class="col-sm-4 col-md-4 col-lg-4">
-					Select Game: <select id="game_selection" name = "simName">
-						<c:forEach var="gameName" items="${games}">
-							<option>${gameName}</option>
-						</c:forEach>
-					</select>
-				</div>
-				<div class="col-sm-4 col-md-4 col-lg-4">
-					<input type="submit" value="Create Game">
-				</div>
+		<h2>About the Game</h2>
+		<br />
+		<p>${description}</p>
+		<br /> <br /> <br /> <br /> <br />
+		<div class="row">
+			<div class="col-sm-6 col-md-6 col-lg-6">
+				<form method="get" action="/CoreEmoEngineService/game/view/home">
+					<input type="submit" value="New Player">
+				</form>
 			</div>
-		</form>
+			<div class="col-sm-6 col-md-6 col-lg-6">
+				<form method="get" action="/CoreEmoEngineService/game/view/existing">
+					<input type="submit" value="Existing Player">
+				</form>
+			</div>
+		</div>
 	</div>
 
-<script type="text/javascript">
+	<script type="text/javascript">
 		function googleTranslateElementInit() {
 			new google.translate.TranslateElement({
 				pageLanguage : 'en'
