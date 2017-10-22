@@ -51,9 +51,9 @@
 		destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url"
-			value="jdbc:mysql://localhost:3306/psycho_social_context" />
-		<property name="username" value="root" />
-		<property name="password" value="root" />
+			value="jdbc:mysql://localhost:3306/emotrava_psycho_social_context" />
+		<property name="username" value="emotrava_sea" />
+		<property name="password" value="TrueIntent01" />
 	</bean>
 
 

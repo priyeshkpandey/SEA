@@ -20,7 +20,7 @@
 		<form method = "post" action = "/CoreEmoEngineService/game/view/open">
 			<div class="row">
 				<div class="col-sm-4 col-md-4 col-lg-4">
-					Enter Email : <input type="text" name="playerId">
+					Enter Unique User Name : <input type="text" name="playerId">
 				</div>
 				<div class="col-sm-4 col-md-4 col-lg-4">
 					Select Game: <select id="game_selection" name = "simName">
