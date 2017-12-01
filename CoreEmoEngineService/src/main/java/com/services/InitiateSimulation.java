@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,7 +43,6 @@ public class InitiateSimulation extends BaseController {
 
 	}
 
-	@Async
 	public void initSimulation(String userId, Long simId,
 			Long personOfInterest, List<Long> agents) {
 		SimulationDAO simDAO = context.getBean(SimulationDAO.class);
